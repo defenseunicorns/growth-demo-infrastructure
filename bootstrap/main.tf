@@ -9,7 +9,6 @@ resource "aws_kms_key" "objects" {
 
 module "state_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
-  # TODO: add renovate
   version = "3.15.1"
 
   bucket_prefix = "uds-${var.stage}-state-"
@@ -46,7 +45,6 @@ resource "aws_kms_key" "dynamodb" {
 
 module "lock_table" {
   source = "terraform-aws-modules/dynamodb-table/aws"
-  # TODO: add renovate
   version = "3.3.0"
 
   name     = "uds-state-lock"
@@ -71,7 +69,6 @@ module "lock_table" {
 
 module "github_oidc_provider" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
-  # TODO: add renovate
   version = "5.30.0"
 }
 
@@ -81,7 +78,6 @@ data "aws_partition" "current" {}
 
 module "github_oidc_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
-  # TODO: add renovate
   version = "5.30.0"
 
   name                     = "GitHubActionsAssumeWithWebIdentity"
