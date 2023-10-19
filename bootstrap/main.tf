@@ -72,10 +72,6 @@ module "github_oidc_provider" {
   version = "5.30.0"
 }
 
-data "aws_caller_identity" "current" {}
-
-data "aws_partition" "current" {}
-
 module "github_oidc_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
   version = "5.30.0"
@@ -83,7 +79,7 @@ module "github_oidc_role" {
   name                     = "GitHubActionsAssumeWithWebIdentity"
   description              = "IAM Role that GitHub Actions assumes to perform actions on AWS"
   force_detach_policies    = true
-  max_session_duration     = 28800 # 8 hours
+  max_session_duration     = 10800 # 3 hours
   permissions_boundary_arn = var.permissions_boundary
   policies                 = var.github_policies
 

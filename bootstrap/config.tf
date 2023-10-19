@@ -18,7 +18,7 @@ provider "aws" {
   default_tags {
     tags = {
       terraform   = true
-      repository  = "uds-prod-infrastructure"
+      repository  = "github.com/defenseunicorns/uds-prod-infrastructure"
       environment = var.stage
     }
   }

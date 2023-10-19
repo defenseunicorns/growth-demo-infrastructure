@@ -4,7 +4,7 @@ output "github_role_arn" {
 }
 
 output "lock_table_id" {
-  description = "D of the DynamoDB table"
+  description = "ID of the DynamoDB table"
   value       = module.lock_table.dynamodb_table_id
 }
 
