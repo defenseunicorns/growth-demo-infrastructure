@@ -1,4 +1,4 @@
-name: test-vpc
+name: Test bootstrap stack in staging
 on:
   pull_request:
     types:
