@@ -22,10 +22,7 @@ jobs:
         working-directory: './bootstrap/'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v4
 
       - name: Terraform Formatting
         uses: ./.github/actions/terraform-formatting
