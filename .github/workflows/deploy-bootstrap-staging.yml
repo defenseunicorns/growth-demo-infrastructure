@@ -30,6 +30,8 @@ jobs:
         role-duration-seconds: 21600
 
     - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: "1.5.7"
     - name: Run Terraform Apply
       env:
         TF_VAR_github_policies: ${{ vars.AWS_GITHUB_POLICIES }}
