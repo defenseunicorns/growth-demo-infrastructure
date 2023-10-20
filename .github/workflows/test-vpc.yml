@@ -57,7 +57,7 @@ jobs:
           terraform init \
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
-            -backend-config="key=${{ vars.STATE_KEY }}" \
+            -backend-config="key=${{ vars.STATE_KEY_VPC }}" \
             -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
           terraform plan -out terraform.plan
           terraform show -no-color terraform.plan > terraform.text
