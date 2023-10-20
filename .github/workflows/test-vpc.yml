@@ -1,4 +1,4 @@
-name: Test bootstrap stack in staging
+name: Test VPC stack in staging
 on:
   pull_request:
     types:
@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'bootstrap/**.tf'
+      - 'vpc/**.tf'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
     environment: staging
     defaults:
       run:
-        working-directory: './bootstrap/'
+        working-directory: './vpc/'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -46,15 +46,18 @@ jobs:
 
     - name: Run Terraform Plan
       env:
-        TF_VAR_github_policies: ${{ vars.AWS_GITHUB_POLICIES }}
-        TF_VAR_permissions_boundary: ${{ vars.PERMISSIONS_BOUNDARY }}
+        TF_VAR_cidr: ${{ vars.VPC_CIDR }}
+        TF_VAR_num_azs: ${{ vars.VPC_NUM_AZS }}
         TF_VAR_region: ${{ vars.AWS_REGION }}
+        TF_VAR_secondary_cidr_blocks: ${{ vars.VPC_SECONDARY_CIDR_BLOCKS }}
         TF_VAR_stage: ${{ vars.STAGE }}
+        TF_VAR_vpc_flow_log_permissions_boundary: ${{ vars.PERMISSIONS_BOUNDARY }}
+        TF_VAR_vpc_name: ${{ vars.VPC_NAME }}
       run: |
           terraform init \
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
-            -backend-config="key=${{ vars.STATE_KEY_BOOTSTRAP }}" \
+            -backend-config="key=${{ vars.STATE_KEY_VPC }}" \
             -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
           terraform plan -out terraform.plan
           terraform show -no-color terraform.plan > terraform.text
@@ -63,6 +66,6 @@ jobs:
     - name: Generate Terraform Diff Report
       uses: ahmadnassri/action-terraform-report@v3
       with:
-        terraform-text: bootstrap/terraform.text
-        terraform-json: bootstrap/terraform.json
+        terraform-text: vpc/terraform.text
+        terraform-json: vpc/terraform.json
         remove-stale-reports: true
