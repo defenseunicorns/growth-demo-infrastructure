@@ -66,6 +66,6 @@ jobs:
     - name: Generate Terraform Diff Report
       uses: ahmadnassri/action-terraform-report@v3
       with:
-        terraform-text: bootstrap/terraform.text
-        terraform-json: bootstrap/terraform.json
+        terraform-text: vpc/terraform.text
+        terraform-json: vpc/terraform.json
         remove-stale-reports: true
