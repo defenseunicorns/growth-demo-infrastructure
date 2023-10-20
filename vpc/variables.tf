@@ -34,5 +34,5 @@ variable "vpc_flow_log_permissions_boundary" {
 variable "vpc_name" {
   description = "Name to identify resources."
   type        = string
-  default     = "uds-software-factory"
+  default     = "uds-prod"
 }
