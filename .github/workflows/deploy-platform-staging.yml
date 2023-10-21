@@ -1,21 +1,21 @@
-name: Deploy VPC stack to Staging
+name: Deploy platform stack to Staging
 on:
   push:
     branches:
       - main
     paths:
-      - 'vpc/**.tf'
+      - 'terraform/platform/**.tf'
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  deploy-vpc-stack:
+  deploy-platform-stack:
     environment: staging
     defaults:
       run:
-        working-directory: './vpc/'
+        working-directory: './terraform/platform/'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -44,6 +44,6 @@ jobs:
         terraform init \
           -backend-config="region=${{ vars.AWS_REGION }}" \
           -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
-          -backend-config="key=${{ vars.STATE_KEY_VPC }}" \
+          -backend-config="key=${{ vars.STATE_KEY_PLATFORM }}" \
           -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
         terraform apply -auto-approve

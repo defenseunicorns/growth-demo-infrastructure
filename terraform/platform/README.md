@@ -1,4 +1,6 @@
-# VPC
+# Platform
+
+This deploys the VPC and cluster for UDS Prod.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

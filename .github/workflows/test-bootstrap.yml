@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'bootstrap/**.tf'
+      - 'terraform/bootstrap/**.tf'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
     environment: staging
     defaults:
       run:
-        working-directory: './bootstrap/'
+        working-directory: './terraform/bootstrap/'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -63,6 +63,6 @@ jobs:
     - name: Generate Terraform Diff Report
       uses: ahmadnassri/action-terraform-report@v3
       with:
-        terraform-text: bootstrap/terraform.text
-        terraform-json: bootstrap/terraform.json
+        terraform-text: terraform/bootstrap/terraform.text
+        terraform-json: terraform/bootstrap/terraform.json
         remove-stale-reports: true

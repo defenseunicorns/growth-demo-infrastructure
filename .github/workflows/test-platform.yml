@@ -1,4 +1,4 @@
-name: Test VPC stack in staging
+name: Test platform stack in staging
 on:
   pull_request:
     types:
@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - 'vpc/**.tf'
+      - 'terraform/platform/**.tf'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
     environment: staging
     defaults:
       run:
-        working-directory: './vpc/'
+        working-directory: './terraform/platform/'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
           terraform init \
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
-            -backend-config="key=${{ vars.STATE_KEY_VPC }}" \
+            -backend-config="key=${{ vars.STATE_KEY_PLATFORM }}" \
             -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
           terraform plan -out terraform.plan
           terraform show -no-color terraform.plan > terraform.text
@@ -66,6 +66,6 @@ jobs:
     - name: Generate Terraform Diff Report
       uses: ahmadnassri/action-terraform-report@v3
       with:
-        terraform-text: vpc/terraform.text
-        terraform-json: vpc/terraform.json
+        terraform-text: terraform/platform/terraform.text
+        terraform-json: terraform/platform/terraform.json
         remove-stale-reports: true
