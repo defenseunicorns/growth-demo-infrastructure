@@ -8,10 +8,10 @@ resource "aws_kms_key" "objects" {
 }
 
 module "state_bucket" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.15.1"
 
-  bucket_prefix = "uds-${var.stage}-state-"
+  bucket_prefix = "uds-${var.environment}-state-"
 
   server_side_encryption_configuration = {
     rule = {
@@ -44,7 +44,7 @@ resource "aws_kms_key" "dynamodb" {
 }
 
 module "lock_table" {
-  source = "terraform-aws-modules/dynamodb-table/aws"
+  source  = "terraform-aws-modules/dynamodb-table/aws"
   version = "3.3.0"
 
   name     = "uds-state-lock"
@@ -68,12 +68,12 @@ module "lock_table" {
 #######################################
 
 module "github_oidc_provider" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
   version = "5.30.0"
 }
 
 module "github_oidc_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
   version = "5.30.0"
 
   name                     = "GitHubActionsAssumeWithWebIdentity"

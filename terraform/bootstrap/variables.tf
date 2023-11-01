@@ -15,7 +15,7 @@ variable "region" {
   type        = string
 }
 
-variable "stage" {
-  description = "Environment stage (e.g. 'prod' or 'staging')"
+variable "environment" {
+  description = "Deployment environment (e.g. 'prod' or 'staging')"
   type        = string
 }

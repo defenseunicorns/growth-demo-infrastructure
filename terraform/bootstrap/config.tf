@@ -18,7 +18,7 @@ provider "aws" {
     tags = {
       terraform   = true
       repository  = "github.com/defenseunicorns/uds-prod-infrastructure"
-      environment = var.stage
+      environment = var.environment
     }
   }
 }

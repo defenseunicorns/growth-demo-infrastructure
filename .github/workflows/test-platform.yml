@@ -50,9 +50,14 @@ jobs:
         TF_VAR_num_azs: ${{ vars.VPC_NUM_AZS }}
         TF_VAR_region: ${{ vars.AWS_REGION }}
         TF_VAR_secondary_cidr_blocks: ${{ vars.VPC_SECONDARY_CIDR_BLOCKS }}
-        TF_VAR_stage: ${{ vars.STAGE }}
+        TF_VAR_environment: ${{ vars.ENVIRONMENT }}
         TF_VAR_vpc_flow_log_permissions_boundary: ${{ vars.PERMISSIONS_BOUNDARY }}
         TF_VAR_vpc_name: ${{ vars.VPC_NAME }}
+        TF_VAR_rke2_ami: ${{ vars.RKE2_AMI }}
+        TF_VAR_permissions_boundary: ${{ vars.PERMISSIONS_BOUNDARY }}
+        TF_VAR_agent_asg_min: ${{ vars.AGENT_ASG_MIN }}
+        TF_VAR_agent_asg_max: ${{ vars.AGENT_ASG_MAX }}
+        TF_VAR_agent_asg_desired: ${{ vars.AGENT_ASG_DESIRED }}
       run: |
           terraform init \
             -backend-config="region=${{ vars.AWS_REGION }}" \
