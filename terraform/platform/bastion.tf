@@ -75,6 +75,8 @@ resource "aws_iam_role" "bastion-host-instance-role" {
       }
     ]
   })
+
+  permissions_boundary = var.permissions_boundary
 }
 
 resource "aws_iam_instance_profile" "bastion-host-instance-profile" {
