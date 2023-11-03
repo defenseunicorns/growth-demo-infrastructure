@@ -40,6 +40,12 @@ jobs:
         with:
           environment: burn-the-boats
           target: vpc
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
   # deploy_cluster:
   #   needs:
@@ -54,3 +60,9 @@ jobs:
   #       with:
   #         environment: burn-the-boats
   #         target: cluster
+  #       env:
+  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+  #         AWS_REGION: ${{ vars.AWS_REGION }}
+  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
