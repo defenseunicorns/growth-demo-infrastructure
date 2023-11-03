@@ -1,17 +1,22 @@
-name: Deploy platform stack to Staging
+name: Test platform stack in staging
 on:
-  push:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
     branches:
       - main
     paths:
       - 'terraform/platform/**.tf'
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
+  pull-requests: write
 
 jobs:
-  deploy-platform-stack:
+  infrastructure-checks:
     environment: staging
     defaults:
       run:
@@ -19,6 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Terraform Formatting
+        uses: ./.github/actions/terraform-formatting
+        with:
+          target: 'platform'
+
+      - name: Terraform Scanning
+        uses: ./.github/actions/terraform-scanning
+        with:
+          target: 'platform'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -30,8 +45,10 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v2
         with:
+          terraform_wrapper: false
           terraform_version: "1.5.7"
-      - name: Run Terraform Apply
+
+      - name: Run Terraform Plan
         env:
           TF_VAR_cidr: ${{ vars.VPC_CIDR }}
           TF_VAR_num_azs: ${{ vars.VPC_NUM_AZS }}
@@ -46,9 +63,18 @@ jobs:
           TF_VAR_agent_asg_max: ${{ vars.AGENT_ASG_MAX }}
           TF_VAR_agent_asg_desired: ${{ vars.AGENT_ASG_DESIRED }}
         run: |
-          terraform init \
-            -backend-config="region=${{ vars.AWS_REGION }}" \
-            -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
-            -backend-config="key=${{ vars.STATE_KEY_PLATFORM }}" \
-            -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
-          terraform apply -auto-approve
+            terraform init \
+              -backend-config="region=${{ vars.AWS_REGION }}" \
+              -backend-config="bucket=${{ vars.STATE_BUCKET }}" \
+              -backend-config="key=${{ vars.STATE_KEY_PLATFORM }}" \
+              -backend-config="dynamodb_table=${{ vars.LOCK_TABLE }}"
+            terraform plan -out terraform.plan
+            terraform show -no-color terraform.plan > terraform.text
+            terraform show -json terraform.plan > terraform.json
+
+      - name: Generate Terraform Diff Report
+        uses: ahmadnassri/action-terraform-report@v3
+        with:
+          terraform-text: terraform/platform/terraform.text
+          terraform-json: terraform/platform/terraform.json
+          remove-stale-reports: true

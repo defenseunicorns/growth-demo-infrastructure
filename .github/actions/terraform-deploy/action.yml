@@ -1,0 +1,40 @@
+name: Terraform Deploy
+description: Runs an apply on the terraform.
+
+inputs:
+  environment:
+    description: Name of the environment to apply
+    required: true
+  target:
+    description: Target directory under terraform
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+        role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha  }}
+        aws-region: ${{ env.AWS_REGION }}
+        role-duration-seconds: 3600
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: "1.5.7"
+    - name: Run Terraform Apply
+      shell: bash
+      working-directory: './terraform/${{ inputs.target }}/'
+      env:
+        TF_VAR_environment: ${{ inputs.environment }}
+        TF_VAR_region: ${{ env.AWS_REGION }}
+        TF_VAR_permissions_boundary: ${{ env.PERMISSIONS_BOUNDARY }}
+      run: |
+        terraform init \
+          -backend-config="region=${AWS_REGION}" \
+          -backend-config="bucket=${STATE_BUCKET}" \
+          -backend-config="key=${{ inputs.environment }}/${{ inputs.target }}.tfstate" \
+          -backend-config="dynamodb_table=${LOCK_TABLE}" \
+          -var-file="../../env/${{ inputs.environment }}/${{ inputs.target }}.tfvars" \
+        terraform apply -var-file="../../env/${{ inputs.environment }}/${{ inputs.target }}.tfvars" -auto-approve

@@ -1,6 +1,11 @@
 name: Terraform Scanning
 description: Scan using common checks in Terraform
 
+inputs:
+  target:
+    description: Target directory under terraform
+    required: true
+
 runs:
   using: composite
   steps:
@@ -8,10 +13,6 @@ runs:
       name: Setup TFLint
       with:
         tflint_version: latest
-
-    - name: Show version
-      run: tflint --version
-      shell: bash
 
     - name: Init TFLint
       run: tflint --init
@@ -22,4 +23,5 @@ runs:
 
     - name: Run TFLint
       run: tflint -f compact
+      working-directory: './terraform/${{ inputs.target }}/'
       shell: bash

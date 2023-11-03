@@ -1,0 +1,56 @@
+name: Deploy Burn the Boats
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      vpc_changes: ${{ steps.changes.outputs.vpc }}
+      cluster_changes: ${{ steps.changes.outputs.cluster }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Check paths
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            vpc:
+              - 'terraform/vpc/**'
+              - 'env/burn-the-boats/vpc.tfvars'
+            cluster:
+              - 'terraform/cluster/**'
+              - 'env/burn-the-boats/cluster.tfvars'
+
+  deploy_vpc:
+    needs: check_changes
+    if: needs.check_changes.outputs.vpc_changes == 'true'
+    environment: burn-the-boats
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-deploy
+        with:
+          environment: burn-the-boats
+          target: vpc
+
+  # deploy_cluster:
+  #   needs:
+  #     - check_changes
+  #     - deploy_vpc
+  #   if: needs.check_changes.outputs.cluster_changes == 'true' && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' )
+  #   environment: burn-the-boats
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/terraform-deploy
+  #       with:
+  #         environment: burn-the-boats
+  #         target: cluster
