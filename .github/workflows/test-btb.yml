@@ -30,9 +30,11 @@ jobs:
             vpc:
               - 'terraform/vpc/**'
               - 'env/burn-the-boats/vpc.tfvars'
+              - '.github/actions/terraform-test/**'
             cluster:
               - 'terraform/cluster/**'
               - 'env/burn-the-boats/cluster.tfvars'
+              - '.github/actions/terraform-test/**'
 
   vpc_checks:
     needs: check_changes

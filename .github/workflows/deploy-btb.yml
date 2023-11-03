@@ -25,9 +25,11 @@ jobs:
             vpc:
               - 'terraform/vpc/**'
               - 'env/burn-the-boats/vpc.tfvars'
+              - '.github/actions/terraform-deploy/**'
             cluster:
               - 'terraform/cluster/**'
               - 'env/burn-the-boats/cluster.tfvars'
+              - '.github/actions/terraform-deploy/**'
 
   deploy_vpc:
     needs: check_changes

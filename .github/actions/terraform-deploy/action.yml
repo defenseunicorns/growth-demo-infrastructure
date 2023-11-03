@@ -36,5 +36,5 @@ runs:
           -backend-config="bucket=${STATE_BUCKET}" \
           -backend-config="key=${{ inputs.environment }}/${{ inputs.target }}.tfstate" \
           -backend-config="dynamodb_table=${LOCK_TABLE}" \
-          -var-file="../../env/${{ inputs.environment }}/${{ inputs.target }}.tfvars" \
+          -var-file="../../env/${{ inputs.environment }}/${{ inputs.target }}.tfvars"
         terraform apply -var-file="../../env/${{ inputs.environment }}/${{ inputs.target }}.tfvars" -auto-approve
