@@ -223,7 +223,7 @@ module "rke2" {
   #
   # Server pool config
   #
-  instance_type            = "m5.2xlarge"
+  instance_type            = "m5a.8xlarge"
   ami                      = var.rke2_ami
   iam_permissions_boundary = var.permissions_boundary
   block_device_mappings = {
@@ -231,6 +231,14 @@ module "rke2" {
     encrypted = true
     type      = "gp3"
   }
+  extra_block_device_mappings = [
+    {
+      device_name = "/dev/sdb"
+      size        = 100
+      encrypted   = true
+      type        = "gp3"
+    }
+  ]
   servers = var.num_rke2_servers
 
   #
@@ -255,10 +263,11 @@ module "rke2" {
 module "rke2_agents" {
   source = "github.com/rancherfederal/rke2-aws-tf//modules/agent-nodepool?ref=v2.4.0"
 
-  name    = "agent"
-  vpc_id  = module.vpc.vpc_id
-  subnets = var.public_access ? module.vpc.public_subnets : module.vpc.private_subnets
-  ami     = var.rke2_ami
+  name          = "agent"
+  vpc_id        = module.vpc.vpc_id
+  subnets       = var.public_access ? module.vpc.public_subnets : module.vpc.private_subnets
+  ami           = var.rke2_ami
+  instance_type = "m5a.8xlarge"
 
   #
   # Nodepool Config
@@ -269,6 +278,14 @@ module "rke2_agents" {
     encrypted = true
     type      = "gp3"
   }
+  extra_block_device_mappings = [
+    {
+      device_name = "/dev/sdb"
+      size        = 100
+      encrypted   = true
+      type        = "gp3"
+    }
+  ]
   asg = {
     min : var.agent_asg_min,
     max : var.agent_asg_max,
