@@ -54,22 +54,22 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  # cluster_checks:
-  #   needs: 
-  #     - check_changes
-  #     - vpc_checks
-  #   if: needs.check_changes.outputs.cluster_changes == 'true' && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' )
-  #   environment: burn-the-boats
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/terraform-test
-  #       with:
-  #         environment: burn-the-boats
-  #         target: cluster
-  #       env:
-  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-  #         AWS_REGION: ${{ vars.AWS_REGION }}
-  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  cluster_checks:
+    needs: 
+      - check_changes
+      - vpc_checks
+    if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    environment: burn-the-boats
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: burn-the-boats
+          target: cluster
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}

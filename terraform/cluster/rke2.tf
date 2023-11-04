@@ -1,5 +1,7 @@
 locals {
-  cluster_name = "uds-${var.environment}-cluster"
+  shortenv = var.environment == "burn-the-boats" ? "btb" : var.environment
+
+  cluster_name = "uds-${local.shortenv}-cluster"
 
   pre_userdata = <<-EOF
 echo "Adding AWS cloud provider manifest."
@@ -243,7 +245,7 @@ module "rke2" {
   cluster_name  = local.cluster_name
   unique_suffix = false
   vpc_id        = data.aws_vpc.vpc.id
-  subnets       = var.public_access ? data.aws_subnets.public_subnets : data.aws_subnets.private_subnets
+  subnets       = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
 
   #
   # Server pool config
@@ -283,7 +285,7 @@ module "rke2_agents" {
 
   name          = "agent"
   vpc_id        = data.aws_vpc.vpc.id
-  subnets       = var.public_access ? data.aws_subnets.public_subnets : data.aws_subnets.private_subnets
+  subnets       = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
   ami           = var.rke2_ami
   instance_type = var.agent_instance_type
 
@@ -344,5 +346,5 @@ resource "aws_security_group_rule" "quickstart_ssh" {
   protocol          = "tcp"
   security_group_id = module.rke2.cluster_data.cluster_sg
   type              = "ingress"
-  cidr_blocks       = var.public_access ? ["0.0.0.0/0"] : [for s in data.aws_subnets.private_subnets : s.cidr_blocks]
+  cidr_blocks       = var.public_access ? ["0.0.0.0/0"] : [for s in data.aws_subnets.private_subnets.ids : s.cidr_blocks]
 }
