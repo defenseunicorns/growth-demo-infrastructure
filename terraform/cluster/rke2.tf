@@ -239,6 +239,7 @@ data "aws_subnets" "private_subnets" {
   }
 }
 
+
 module "rke2" {
   source = "github.com/rancherfederal/rke2-aws-tf?ref=v2.4.0"
 
@@ -346,5 +347,5 @@ resource "aws_security_group_rule" "quickstart_ssh" {
   protocol          = "tcp"
   security_group_id = module.rke2.cluster_data.cluster_sg
   type              = "ingress"
-  cidr_blocks       = var.public_access ? ["0.0.0.0/0"] : [for s in data.aws_subnets.private_subnets.ids : s.cidr_blocks]
+  cidr_blocks       = var.public_access ? ["0.0.0.0/0"] : [data.aws_vpc.vpc.cidr_block]
 }
