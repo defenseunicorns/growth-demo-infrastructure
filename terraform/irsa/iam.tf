@@ -1,6 +1,14 @@
 //
 // IAM to support RKE2 server nodes
 //
+locals {
+  shortenv = var.environment == "burn-the-boats" ? "btb" : var.environment
+
+  cluster_name = "uds-${local.shortenv}-cluster"
+}
+
+data "aws_partition" "current" {}
+
 data "aws_iam_policy_document" "ec2_access" {
   statement {
     effect  = "Allow"
@@ -13,7 +21,7 @@ data "aws_iam_policy_document" "ec2_access" {
 }
 
 resource "aws_iam_role" "rke2_server" {
-  name = "${var.environment}-rke2-server"
+  name = "${local.cluster_name}-server"
 
   assume_role_policy   = data.aws_iam_policy_document.ec2_access.json
   permissions_boundary = var.permissions_boundary
@@ -32,7 +40,7 @@ resource "aws_iam_instance_profile" "rke2_server" {
 data "aws_iam_policy_document" "s3_token" {
   statement {
     effect    = "Allow"
-    resources = ["arn:aws:s3:::uds-${var.environment}-*"]
+    resources = ["arn:${data.aws_partition.current.partition}:s3:::uds-${var.environment}-*"]
     actions = [
       "s3:GetObject",
       "s3:PutObject"
