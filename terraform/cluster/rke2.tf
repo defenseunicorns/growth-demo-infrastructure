@@ -29,11 +29,52 @@ spec:
       - --cloud-provider=aws
 EOM
 
+cat > /var/lib/rancher/rke2/server/manifests/01-aws-ebs.yaml << EOM
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: aws-ebs-csi-driver
+  namespace: kube-system
+spec:
+  chart: aws-ebs-csi-driver
+  repo: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+  version: 2.25.0
+  targetNamespace: kube-system
+  valuesContent: |-
+    storageClasses:
+      - name: default
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"
+        allowVolumeExpansion: true
+        provisioner: kubernetes.io/aws-ebs
+        volumeBindingMode: WaitForFirstConsumer
+        parameters:
+          type: gp3
+        reclaimPolicy: Retain
+EOM
+
 echo "Installing awscli"
-yum install -y unzip
+yum install -y unzip jq
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
+
+echo "Getting OIDC keypair"
+sudo mkdir /irsa
+sudo chown ec2-user:ec2-user /irsa
+aws secretsmanager get-secret-value --secret-id ${var.environment}-oidc-private-key | jq -r '.SecretString' > /irsa/signer.key
+aws secretsmanager get-secret-value --secret-id ${var.environment}-oidc-public-key | jq -r '.SecretString' > /irsa/signer.key.pub
+chcon -t svirt_sandbox_file_t /irsa/*
+
+# This is done via yq because the RKE2 module input doesn't merge with existing config
+echo "Setting up RKE2 config file"
+curl -L https://github.com/mikefarah/yq/releases/download/v4.40.4/yq_linux_amd64 -o yq
+chmod +x yq
+./yq -i '.kube-apiserver-arg += "service-account-key-file=/irsa/signer.key.pub"' /etc/rancher/rke2/config.yaml
+./yq -i '.kube-apiserver-arg += "service-account-signing-key-file=/irsa/signer.key"' /etc/rancher/rke2/config.yaml
+./yq -i '.kube-apiserver-arg += "api-audiences=kubernetes.svc.default"' /etc/rancher/rke2/config.yaml
+./yq -i '.kube-apiserver-arg += "service-account-issuer=https://${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}"' /etc/rancher/rke2/config.yaml
+rm -rf ./yq
 EOF
 
   post_userdata = <<-EOF
@@ -72,139 +113,6 @@ chmod 0700 $dir/tls
 chmod 0751 $dir/manifests
 chmod 0750 $dir/logs
 chmod 0600 $dir/token
-
-echo "Fixing SELinux file context so local path provisioner can work."
-mkdir -p /opt/local-path-provisioner
-semanage fcontext -a -t container_file_t "/opt/local-path-provisioner(/.*)?"
-restorecon -R /opt/local-path-provisioner
-
-echo "Adding local path storage manifest."
-cat > /var/lib/rancher/rke2/server/manifests/10-local-path-storage.yaml << EOM
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: local-path-storage
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: local-path-provisioner-service-account
-  namespace: local-path-storage
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: local-path-provisioner-role
-rules:
-  - apiGroups: [ "" ]
-    resources: [ "nodes", "persistentvolumeclaims", "configmaps" ]
-    verbs: [ "get", "list", "watch" ]
-  - apiGroups: [ "" ]
-    resources: [ "endpoints", "persistentvolumes", "pods" ]
-    verbs: [ "*" ]
-  - apiGroups: [ "" ]
-    resources: [ "events" ]
-    verbs: [ "create", "patch" ]
-  - apiGroups: [ "storage.k8s.io" ]
-    resources: [ "storageclasses" ]
-    verbs: [ "get", "list", "watch" ]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: local-path-provisioner-bind
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: local-path-provisioner-role
-subjects:
-  - kind: ServiceAccount
-    name: local-path-provisioner-service-account
-    namespace: local-path-storage
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: local-path-provisioner
-  namespace: local-path-storage
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: local-path-provisioner
-  template:
-    metadata:
-      labels:
-        app: local-path-provisioner
-    spec:
-      serviceAccountName: local-path-provisioner-service-account
-      containers:
-        - name: local-path-provisioner
-          image: rancher/local-path-provisioner:v0.0.24
-          imagePullPolicy: IfNotPresent
-          command:
-            - local-path-provisioner
-            - --debug
-            - start
-            - --config
-            - /etc/config/config.json
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/config/
-          env:
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-      volumes:
-        - name: config-volume
-          configMap:
-            name: local-path-config
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: local-path
-  annotations:
-    storageclass.kubernetes.io/is-default-class: 'true'
-provisioner: rancher.io/local-path
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Delete
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: local-path-config
-  namespace: local-path-storage
-data:
-  config.json: |-
-    {
-      "nodePathMap":[
-        {
-          "node":"DEFAULT_PATH_FOR_NON_LISTED_NODES",
-          "paths":["/opt/local-path-provisioner"]
-        }
-      ]
-    }
-  setup: |-
-    #!/bin/sh
-    set -eu
-    mkdir -m 0777 -p "\$VOL_DIR"
-  teardown: |-
-    #!/bin/sh
-    set -eu
-    rm -rf "\$VOL_DIR"
-  helperPod.yaml: |-
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      name: helper-pod
-    spec:
-      containers:
-      - name: helper-pod
-        image: busybox
-        imagePullPolicy: IfNotPresent
-EOM
 EOF
 }
 
@@ -239,14 +147,19 @@ data "aws_subnets" "private_subnets" {
   }
 }
 
+data "aws_s3_bucket" "oidc_bucket" {
+  bucket = "${var.environment}-oidc"
+}
+
 
 module "rke2" {
   source = "github.com/rancherfederal/rke2-aws-tf?ref=v2.4.0"
 
-  cluster_name  = local.cluster_name
-  unique_suffix = false
-  vpc_id        = data.aws_vpc.vpc.id
-  subnets       = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
+  cluster_name         = local.cluster_name
+  unique_suffix        = false
+  vpc_id               = data.aws_vpc.vpc.id
+  subnets              = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
+  iam_instance_profile = "${var.environment}-rke2-server"
 
   #
   # Server pool config

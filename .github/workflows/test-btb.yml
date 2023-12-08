@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       vpc_changes: ${{ steps.changes.outputs.vpc }}
+      irsa_changes: ${{ steps.changes.outputs.irsa }}
       cluster_changes: ${{ steps.changes.outputs.cluster }}
     steps:
       - name: Checkout the code
@@ -31,6 +32,10 @@ jobs:
               - 'terraform/vpc/**'
               - 'env/burn-the-boats/vpc.tfvars'
               - '.github/actions/terraform-test/**'
+            irsa:
+              - 'terraform/irsa/**'
+              - 'env/burn-the-boats/irsa.tfvars'
+              - '.github/actions/terraform-deploy/**'
             cluster:
               - 'terraform/cluster/**'
               - 'env/burn-the-boats/cluster.tfvars'
@@ -54,11 +59,30 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
+  irsa_checks:
+    needs: check_changes
+    if: needs.check_changes.outputs.irsa_changes == 'true'
+    environment: burn-the-boats
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: burn-the-boats
+          target: irsa
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
   cluster_checks:
     needs: 
       - check_changes
       - vpc_checks
-    if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+      - irsa_checks
+    if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
     environment: burn-the-boats
     runs-on: ubuntu-latest
     steps:

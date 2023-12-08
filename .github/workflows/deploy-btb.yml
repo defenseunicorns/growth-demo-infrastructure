@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       vpc_changes: ${{ steps.changes.outputs.vpc }}
+      irsa_changes: ${{ steps.changes.outputs.irsa }}
       cluster_changes: ${{ steps.changes.outputs.cluster }}
     steps:
       - name: Checkout the code
@@ -25,6 +26,10 @@ jobs:
             vpc:
               - 'terraform/vpc/**'
               - 'env/burn-the-boats/vpc.tfvars'
+              - '.github/actions/terraform-deploy/**'
+            irsa:
+              - 'terraform/irsa/**'
+              - 'env/burn-the-boats/irsa.tfvars'
               - '.github/actions/terraform-deploy/**'
             cluster:
               - 'terraform/cluster/**'
@@ -49,11 +54,30 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
+  deploy_irsa:
+    needs: check_changes
+    if: needs.check_changes.outputs.irsa_changes == 'true'
+    environment: burn-the-boats
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-deploy
+        with:
+          environment: burn-the-boats
+          target: irsa
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
   deploy_cluster:
     needs:
       - check_changes
       - deploy_vpc
-    if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+      - deploy_irsa
+    if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
     environment: burn-the-boats
     runs-on: ubuntu-latest
     steps:
