@@ -1,4 +1,4 @@
-// Variables for the Burn the Boats Cluster (RKE2)
+// Variables for the Burn the Boats cluster (RKE2)
 rke2_ami = "ami-00249779f19dcc1a5"
 num_rke2_servers = 3
 agent_asg_min = 1

@@ -40,7 +40,7 @@ resource "aws_iam_instance_profile" "rke2_server" {
 data "aws_iam_policy_document" "s3_token" {
   statement {
     effect    = "Allow"
-    resources = ["arn:${data.aws_partition.current.partition}:s3:::uds-${var.environment}-*"]
+    resources = ["arn:${data.aws_partition.current.partition}:s3:::${local.cluster_name}-*"]
     actions = [
       "s3:GetObject",
       "s3:PutObject"
