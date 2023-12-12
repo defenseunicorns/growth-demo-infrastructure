@@ -1,3 +1,6 @@
+# irsa-s3
+
+Module for creating S3 buckets and providing the IAM Roles for Services Accounts (IRSA) resources for accessing those buckets
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
