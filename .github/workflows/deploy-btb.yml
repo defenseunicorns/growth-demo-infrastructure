@@ -107,7 +107,7 @@ jobs:
       - deploy_cluster
     if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
     environment: burn-the-boats
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/terraform-deploy
