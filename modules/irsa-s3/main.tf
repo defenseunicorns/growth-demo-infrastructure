@@ -78,10 +78,10 @@ resource "aws_iam_role" "s3_bucket_role" {
     ]
   })
 
-  permissions_boundary = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/uds_staging_base_policy"
+  permissions_boundary = var.permissions_boundary
 
   tags = {
-    PermissionsBoundary = "${var.resource_prefix}policy"
+    PermissionsBoundary = split("/", var.permissions_boundary)[1]
   }
 }
 

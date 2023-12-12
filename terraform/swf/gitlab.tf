@@ -24,11 +24,12 @@ module "s3_bucket" {
 module "irsa-s3" {
   source = "../../modules/irsa-s3"
 
-  environment     = var.environment
-  region          = var.region
-  resource_prefix = local.resource_prefix
-  bucket_names    = var.bucket_names
-  kms_key_arn     = module.kms_key.kms_key_arn
+  environment          = var.environment
+  region               = var.region
+  permissions_boundary = var.permissions_boundary
+  resource_prefix      = local.resource_prefix
+  bucket_names         = var.bucket_names
+  kms_key_arn          = module.kms_key.kms_key_arn
 }
 
 module "kms_key" {

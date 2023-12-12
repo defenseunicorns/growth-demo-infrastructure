@@ -1,3 +1,9 @@
+variable "permissions_boundary" {
+  description = "The ARN of the Permissions Boundary"
+  type        = string
+  default     = null
+}
+
 variable "environment" {
   description = "Deployment environment (e.g. 'prod' or 'staging')"
   type        = string
