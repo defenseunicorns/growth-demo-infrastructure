@@ -84,7 +84,7 @@ module "gitlab_db" {
 
   subnet_ids = data.aws_subnets.subnets.ids
 
-  manage_master_user_password = true
+  manage_master_user_password = false
   password                    = random_password.gitlab_db_password.result
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
@@ -132,7 +132,7 @@ resource "aws_secretsmanager_secret_version" "elasticache_secret_value" {
 }
 
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id = var.elasticache_cluster_name
+  replication_group_id = "${var.elasticache_cluster_name}-${local.shortenv}"
   description          = "Redis Replication Group for GitLab"
 
   subnet_group_name = aws_elasticache_subnet_group.redis.name
