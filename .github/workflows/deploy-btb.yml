@@ -28,21 +28,25 @@ jobs:
               - 'terraform/vpc/**'
               - 'env/burn-the-boats/vpc.tfvars'
               - '.github/actions/terraform-deploy/**'
+              - '.github/workflows/**'
             irsa:
               - 'terraform/irsa/**'
               - 'env/burn-the-boats/irsa.tfvars'
               - '.github/actions/terraform-deploy/**'
+              - '.github/workflows/**'
             cluster:
               - 'terraform/cluster/**'
               - 'env/burn-the-boats/cluster.tfvars'
               - '.github/actions/terraform-deploy/**'
+              - '.github/workflows/**'
             swf:  
               - 'terraform/swf/**'
               - 'modules/irsa-s3/**'
               - 'modules/irsa-rdb/**'
               - 'modules/irsa-elasticache/**'
               - 'env/burn-the-boats/swf.tfvars'
-              - '.github/actions/terraform-deploy/**' 
+              - '.github/actions/terraform-deploy/**'
+              - '.github/workflows/**'
 
   deploy_vpc:
     needs: check_changes
