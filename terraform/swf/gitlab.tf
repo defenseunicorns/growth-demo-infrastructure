@@ -82,8 +82,8 @@ module "gitlab_db" {
   username = "gitlab"
   port     = "5432"
 
-  subnet_ids = data.aws_subnets.subnets.ids
-
+  subnet_ids                  = data.aws_subnets.subnets.ids
+  db_subnet_group_name        = var.environment
   manage_master_user_password = false
   password                    = random_password.gitlab_db_password.result
 
