@@ -1,20 +1,20 @@
 data "aws_partition" "current" {}
 
-data "aws_ami" "amazon-linux-2" {
+data "aws_ami" "amazon-linux-2023" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-kernel-*-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-*-kernel-*-x86_64"]
   }
 }
 
 resource "aws_instance" "bastion_host" {
   count = var.create_bastion ? 1 : 0
 
-  ami                     = data.aws_ami.amazon-linux-2.id
-  instance_type           = "t3.small"
+  ami                     = data.aws_ami.amazon-linux-2023.id
+  instance_type           = "m5.xlarge"
   subnet_id               = module.vpc.private_subnets[0]
   vpc_security_group_ids  = [aws_security_group.bastion_host_security_group[0].id]
   iam_instance_profile    = aws_iam_instance_profile.bastion-host-instance-profile[0].name
@@ -22,8 +22,14 @@ resource "aws_instance" "bastion_host" {
 
   root_block_device {
     encrypted   = true
-    volume_size = 20
+    volume_size = 120
+    volume_type = "gp3"
   }
+
+  user_data = <<EOF
+		#! /bin/bash
+    yum install -y docker git
+EOF
 
   #checkov:skip=CKV_AWS_135:t3.nano have ebs_optimization enabled by default
   # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html
