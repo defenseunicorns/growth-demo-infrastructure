@@ -72,6 +72,7 @@ data "aws_iam_policy_document" "aws_ccm" {
       "autoscaling:DescribeLaunchConfigurations",
       "autoscaling:DescribeTags",
       "autoscaling:DescribeAutoScalingInstances",
+      "ec2:DescribeAvailabilityZones",
       "ec2:DescribeInstances",
       "ec2:DescribeRegions",
       "ec2:DescribeRouteTables",
