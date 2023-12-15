@@ -49,6 +49,12 @@ variable "server_instance_type" {
   default     = "t3.medium"
 }
 
+variable "server_block_device_size" {
+  description = "Size (GB) for the primary block device on server nodes"
+  type        = number
+  default     = 100
+}
+
 variable "server_extra_block_device_mappings" {
   type    = list(map(string))
   default = []
@@ -76,6 +82,12 @@ variable "agent_asg_max" {
   description = "ASG max config for agent nodepool"
   type        = number
   default     = 2
+}
+
+variable "agent_block_device_size" {
+  description = "Size (GB) for the primary block device on agent nodes"
+  type        = number
+  default     = 100
 }
 
 variable "agent_extra_block_device_mappings" {

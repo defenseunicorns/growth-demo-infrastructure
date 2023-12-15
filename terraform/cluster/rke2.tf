@@ -168,7 +168,7 @@ module "rke2" {
   ami                      = var.rke2_ami
   iam_permissions_boundary = var.permissions_boundary
   block_device_mappings = {
-    size      = 100
+    size      = var.server_block_device_size
     encrypted = true
     type      = "gp3"
   }
@@ -208,7 +208,7 @@ module "rke2_agents" {
   #
   iam_permissions_boundary = var.permissions_boundary
   block_device_mappings = {
-    size      = 100
+    size      = var.agent_block_device_size
     encrypted = true
     type      = "gp3"
   }
