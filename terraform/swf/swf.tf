@@ -1,9 +1,5 @@
 locals {
-  shortenv = var.environment == "burn-the-boats" ? "btb" : var.environment
-
-  #cluster_name = "uds-${local.shortenv}-cluster"
-
-  resource_prefix = "uds-swf-${local.shortenv}-"
+  resource_prefix = "uds-swf-${var.environment}-"
 }
 
 data "aws_vpc" "vpc" {

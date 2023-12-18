@@ -1,7 +1,5 @@
 locals {
-  shortenv = var.environment == "burn-the-boats" ? "btb" : var.environment
-
-  cluster_name = "uds-${local.shortenv}-cluster"
+  cluster_name = "uds-${var.environment}-cluster"
 
   pre_userdata = <<-EOF
 echo "Adding AWS cloud provider manifest."

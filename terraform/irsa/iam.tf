@@ -2,9 +2,7 @@
 // IAM to support RKE2 server nodes
 //
 locals {
-  shortenv = var.environment == "burn-the-boats" ? "btb" : var.environment
-
-  cluster_name = "uds-${local.shortenv}-cluster"
+  cluster_name = "uds-${var.environment}-cluster"
 }
 
 data "aws_partition" "current" {}

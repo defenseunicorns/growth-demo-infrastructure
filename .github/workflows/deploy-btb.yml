@@ -27,17 +27,17 @@ jobs:
           filters: |
             vpc:
               - 'terraform/vpc/**'
-              - 'env/burn-the-boats/vpc.tfvars'
+              - 'env/btb/vpc.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
             irsa:
               - 'terraform/irsa/**'
-              - 'env/burn-the-boats/irsa.tfvars'
+              - 'env/btb/irsa.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
             cluster:
               - 'terraform/cluster/**'
-              - 'env/burn-the-boats/cluster.tfvars'
+              - 'env/btb/cluster.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
             swf:  
@@ -45,7 +45,7 @@ jobs:
               - 'modules/irsa-s3/**'
               - 'modules/irsa-rdb/**'
               - 'modules/irsa-elasticache/**'
-              - 'env/burn-the-boats/swf.tfvars'
+              - 'env/btb/swf.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
             bundle:
@@ -55,13 +55,13 @@ jobs:
   deploy_vpc:
     needs: check_changes
     if: needs.check_changes.outputs.vpc_changes == 'true'
-    environment: burn-the-boats
+    environment: btb
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/terraform-deploy
         with:
-          environment: burn-the-boats
+          environment: btb
           target: vpc
         env:
           AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
@@ -73,13 +73,13 @@ jobs:
   deploy_irsa:
     needs: check_changes
     if: needs.check_changes.outputs.irsa_changes == 'true'
-    environment: burn-the-boats
+    environment: btb
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/terraform-deploy
         with:
-          environment: burn-the-boats
+          environment: btb
           target: irsa
         env:
           AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
@@ -88,76 +88,76 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  deploy_cluster:
-    needs:
-      - check_changes
-      - deploy_vpc
-      - deploy_irsa
-    if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
-    environment: burn-the-boats
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/terraform-deploy
-        with:
-          environment: burn-the-boats
-          target: cluster
-        env:
-          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  # deploy_cluster:
+  #   needs:
+  #     - check_changes
+  #     - deploy_vpc
+  #     - deploy_irsa
+  #   if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+  #   environment: btb
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/terraform-deploy
+  #       with:
+  #         environment: btb
+  #         target: cluster
+  #       env:
+  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+  #         AWS_REGION: ${{ vars.AWS_REGION }}
+  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  deploy_swf:
-    needs:
-      - check_changes
-      - deploy_cluster
-    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
-    environment: burn-the-boats
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/terraform-deploy
-        with:
-          environment: burn-the-boats
-          target: swf
-        env:
-          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  # deploy_swf:
+  #   needs:
+  #     - check_changes
+  #     - deploy_cluster
+  #   if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+  #   environment: btb
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/terraform-deploy
+  #       with:
+  #         environment: btb
+  #         target: swf
+  #       env:
+  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+  #         AWS_REGION: ${{ vars.AWS_REGION }}
+  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  deploy_bundles:
-    needs:
-      - check_changes
-      - deploy_cluster
-    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
-    environment: burn-the-boats
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
+  # deploy_bundles:
+  #   needs:
+  #     - check_changes
+  #     - deploy_cluster
+  #   if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+  #   environment: btb
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Setup runner
-        shell: bash
-        run: uds run setup
-        env:
-          ENVIRONMENT: btb
+  #     - name: Setup runner
+  #       shell: bash
+  #       run: uds run setup
+  #       env:
+  #         ENVIRONMENT: btb
 
-      - name: Create the base bundle
-        shell: bash
-        run: uds run create-base
+  #     - name: Create the base bundle
+  #       shell: bash
+  #       run: uds run create-base
 
-      - name: Deploy the base bundle
-        shell: bash
-        run: uds run deploy-base
-        env:
-          UDS_ADMIN_TLS_CERT: ${{ secrets.UDS_ADMIN_TLS_CERT }}
-          UDS_ADMIN_TLS_KEY: ${{ secrets.UDS_ADMIN_TLS_KEY }}
-          UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
-          UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
+  #     - name: Deploy the base bundle
+  #       shell: bash
+  #       run: uds run deploy-base
+  #       env:
+  #         UDS_ADMIN_TLS_CERT: ${{ secrets.UDS_ADMIN_TLS_CERT }}
+  #         UDS_ADMIN_TLS_KEY: ${{ secrets.UDS_ADMIN_TLS_KEY }}
+  #         UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
+  #         UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
 
-      - name: Save logs
-        if: always()
-        uses: ./.github/actions/save-logs
+  #     - name: Save logs
+  #       if: always()
+  #       uses: ./.github/actions/save-logs

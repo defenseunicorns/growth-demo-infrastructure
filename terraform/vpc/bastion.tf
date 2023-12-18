@@ -60,6 +60,7 @@ resource "aws_security_group" "bastion_host_security_group" {
 
 resource "aws_iam_role" "bastion-host-instance-role" {
   count = var.create_bastion ? 1 : 0
+  name  = "${var.environment}-bastion"
 
   managed_policy_arns = [
     "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore",

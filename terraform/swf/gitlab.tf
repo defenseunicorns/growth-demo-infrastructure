@@ -50,7 +50,7 @@ resource "random_password" "gitlab_db_password" {
 
 resource "aws_secretsmanager_secret" "gitlab_db_secret" {
   name                    = "${local.resource_prefix}gitlab-db-secret"
-  description             = "uds-swf-${local.shortenv} Gitlab DB authentication token"
+  description             = "uds-swf-${var.environment} Gitlab DB authentication token"
   recovery_window_in_days = var.recovery_window
 }
 
@@ -121,7 +121,7 @@ resource "random_password" "elasticache_password" {
 
 resource "aws_secretsmanager_secret" "elasticache_secret" {
   name                    = "${local.resource_prefix}elasticache-secret"
-  description             = "uds-swf-${local.shortenv} Elasticache authentication token"
+  description             = "uds-swf-${var.environment} Elasticache authentication token"
   recovery_window_in_days = var.recovery_window
 }
 
@@ -132,7 +132,7 @@ resource "aws_secretsmanager_secret_version" "elasticache_secret_value" {
 }
 
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id = "${var.elasticache_cluster_name}-${local.shortenv}"
+  replication_group_id = "${var.elasticache_cluster_name}-${var.environment}"
   description          = "Redis Replication Group for GitLab"
 
   subnet_group_name = aws_elasticache_subnet_group.redis.name
