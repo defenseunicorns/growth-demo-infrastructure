@@ -1,0 +1,8 @@
+tasks:
+  - name: base
+    description: "Deploy the base UDS BTB Bundle"
+    actions:
+      - description: "Deploy the base UDS BTB Bundle"
+        cmd: |
+          cd bundles/base
+          uds deploy uds-bundle-base-*.tar.zst --confirm --no-progress

@@ -1,0 +1,15 @@
+tasks:
+  - name: kubeconfig
+    description: "Setup the cluster connection (kubeconfig)"
+    actions:
+      - description: "Setup the cluster connection (kubeconfig)"
+        cmd: |
+          mkdir -p ~/.kube
+          aws s3 cp s3://uds-$ENVIRONMENT-cluster-rke2/rke2.yaml ~/.kube/config
+
+          # Validate cluster connection
+          uds tools kubectl get nodes
+
+          # Clean up previous log files (temp fix for single self-hosted runner)
+          sudo rm -rf /tmp/zarf-*.log
+          sudo rm -rf /tmp/uds-*.log

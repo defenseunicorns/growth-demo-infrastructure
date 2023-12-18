@@ -1,0 +1,8 @@
+tasks:
+  - name: base
+    description: "Create the base UDS BTB Bundle"
+    actions:
+      - description: "Create the base UDS BTB Bundle"
+        cmd: |
+          cd bundles/base
+          uds create --confirm --no-progress

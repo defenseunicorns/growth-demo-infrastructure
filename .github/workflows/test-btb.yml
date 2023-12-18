@@ -21,6 +21,7 @@ jobs:
       irsa_changes: ${{ steps.changes.outputs.irsa }}
       cluster_changes: ${{ steps.changes.outputs.cluster }}
       swf_changes: ${{ steps.changes.outputs.swf }}
+      bundle_changes: ${{ steps.changes.outputs.bundle }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -52,7 +53,10 @@ jobs:
               - 'env/burn-the-boats/swf.tfvars'
               - '.github/actions/terraform-test/**'
               - '.github/workflows/**'
-
+            bundle:
+              - 'bundles/**'
+              - '.github/workflows/**'
+  
   vpc_checks:
     needs: check_changes
     if: needs.check_changes.outputs.vpc_changes == 'true'
@@ -109,7 +113,6 @@ jobs:
           PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
-
   swf_checks:
     needs:
       - check_changes
@@ -129,3 +132,27 @@ jobs:
           PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
+  bundle_checks:
+    needs:
+      - check_changes
+      - cluster_checks
+    if: ${{ always() && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+    environment: burn-the-boats
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
+
+      - name: Test creation of base bundle
+        shell: bash
+        run: uds run create-base
+
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs

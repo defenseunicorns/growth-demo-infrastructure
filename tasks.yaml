@@ -1,0 +1,17 @@
+includes:
+  - setup: ./tasks/setup.yaml
+  - create: ./tasks/create.yaml
+  - deploy: ./tasks/deploy.yaml
+
+tasks:
+  - name: setup
+    actions:
+      - task: setup:kubeconfig
+
+  - name: create-base
+    actions:
+      - task: create:base
+
+  - name: deploy-base
+    actions:
+      - task: deploy:base
