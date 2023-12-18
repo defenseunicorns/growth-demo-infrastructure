@@ -93,45 +93,45 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  # cluster_checks:
-  #   needs: 
-  #     - check_changes
-  #     - vpc_checks
-  #     - irsa_checks
-  #   if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
-  #   environment: btb
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/terraform-test
-  #       with:
-  #         environment: btb
-  #         target: cluster
-  #       env:
-  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-  #         AWS_REGION: ${{ vars.AWS_REGION }}
-  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
-  # swf_checks:
-  #   needs:
-  #     - check_changes
-  #     - cluster_checks
-  #   if: ${{ always() && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
-  #   environment: btb
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/terraform-test
-  #       with:
-  #         environment: btb
-  #         target: swf
-  #       env:
-  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-  #         AWS_REGION: ${{ vars.AWS_REGION }}
-  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  cluster_checks:
+    needs: 
+      - check_changes
+      - vpc_checks
+      - irsa_checks
+    if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    environment: btb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb
+          target: cluster
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  swf_checks:
+    needs:
+      - check_changes
+      - cluster_checks
+    if: ${{ always() && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+    environment: btb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb
+          target: swf
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
   # bundle_checks:
   #   needs:

@@ -88,46 +88,46 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  # deploy_cluster:
-  #   needs:
-  #     - check_changes
-  #     - deploy_vpc
-  #     - deploy_irsa
-  #   if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
-  #   environment: btb
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/terraform-deploy
-  #       with:
-  #         environment: btb
-  #         target: cluster
-  #       env:
-  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-  #         AWS_REGION: ${{ vars.AWS_REGION }}
-  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  deploy_cluster:
+    needs:
+      - check_changes
+      - deploy_vpc
+      - deploy_irsa
+    if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    environment: btb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-deploy
+        with:
+          environment: btb
+          target: cluster
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  # deploy_swf:
-  #   needs:
-  #     - check_changes
-  #     - deploy_cluster
-  #   if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
-  #   environment: btb
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/terraform-deploy
-  #       with:
-  #         environment: btb
-  #         target: swf
-  #       env:
-  #         AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-  #         AWS_REGION: ${{ vars.AWS_REGION }}
-  #         PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
-  #         STATE_BUCKET: ${{ vars.STATE_BUCKET }}
-  #         LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  deploy_swf:
+    needs:
+      - check_changes
+      - deploy_cluster
+    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+    environment: btb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-deploy
+        with:
+          environment: btb
+          target: swf
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
   # deploy_bundles:
   #   needs:
