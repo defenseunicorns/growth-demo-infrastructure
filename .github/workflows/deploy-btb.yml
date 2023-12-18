@@ -129,35 +129,35 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  # deploy_bundles:
-  #   needs:
-  #     - check_changes
-  #     - deploy_cluster
-  #   if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
-  #   environment: btb
-  #   runs-on: self-hosted
-  #   steps:
-  #     - uses: actions/checkout@v4
+  deploy_bundles:
+    needs:
+      - check_changes
+      - deploy_cluster
+    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+    environment: btb
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Setup runner
-  #       shell: bash
-  #       run: uds run setup
-  #       env:
-  #         ENVIRONMENT: btb
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
 
-  #     - name: Create the base bundle
-  #       shell: bash
-  #       run: uds run create-base
+      - name: Create the base bundle
+        shell: bash
+        run: uds run create-base
 
-  #     - name: Deploy the base bundle
-  #       shell: bash
-  #       run: uds run deploy-base
-  #       env:
-  #         UDS_ADMIN_TLS_CERT: ${{ secrets.UDS_ADMIN_TLS_CERT }}
-  #         UDS_ADMIN_TLS_KEY: ${{ secrets.UDS_ADMIN_TLS_KEY }}
-  #         UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
-  #         UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
+      - name: Deploy the base bundle
+        shell: bash
+        run: uds run deploy-base
+        env:
+          UDS_ADMIN_TLS_CERT: ${{ secrets.UDS_ADMIN_TLS_CERT }}
+          UDS_ADMIN_TLS_KEY: ${{ secrets.UDS_ADMIN_TLS_KEY }}
+          UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
+          UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
 
-  #     - name: Save logs
-  #       if: always()
-  #       uses: ./.github/actions/save-logs
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs
