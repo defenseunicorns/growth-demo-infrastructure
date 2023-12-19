@@ -2,6 +2,7 @@ includes:
   - setup: ./tasks/setup.yaml
   - create: ./tasks/create.yaml
   - deploy: ./tasks/deploy.yaml
+  - destroy: ./tasks/destroy.yaml
 
 tasks:
   - name: setup
