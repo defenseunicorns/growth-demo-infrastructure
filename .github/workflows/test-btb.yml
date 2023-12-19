@@ -12,6 +12,7 @@ permissions:
   contents: write
   id-token: write
   pull-requests: write
+  packages: read
 
 jobs:
   check_changes:
@@ -148,6 +149,9 @@ jobs:
         run: uds run setup
         env:
           ENVIRONMENT: btb
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
       - name: Test creation of base bundle
         shell: bash

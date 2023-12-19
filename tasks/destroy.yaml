@@ -1,0 +1,8 @@
+tasks:
+  - name: base
+    description: "Remove the base UDS BTB Bundle"
+    actions:
+      - description: "Remove the base UDS BTB Bundle"
+        cmd: |
+          cd bundles/base
+          uds remove uds-bundle-base-*.tar.zst --confirm --no-progress
