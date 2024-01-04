@@ -99,7 +99,7 @@ jobs:
       - check_changes
       - vpc_checks
       - irsa_checks
-    if: ${{ always() && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    if: ${{ ( !cancelled() ) && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -118,7 +118,7 @@ jobs:
     needs:
       - check_changes
       - cluster_checks
-    if: ${{ always() && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+    if: ${{ ( !cancelled() ) && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -138,7 +138,7 @@ jobs:
     needs:
       - check_changes
       - cluster_checks
-    if: ${{ always() && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+    if: ${{ ( !cancelled() ) && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
     environment: btb
     runs-on: self-hosted
     steps:
