@@ -3,6 +3,23 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      vpc:
+        required: true
+        type: boolean
+      irsa:
+        required: true
+        type: boolean
+      cluster:
+        required: true
+        type: boolean
+      swf:
+        required: true
+        type: boolean
+      bundles:
+        required: true
+        type: boolean
 
 permissions:
   contents: read
@@ -11,6 +28,7 @@ permissions:
 
 jobs:
   check_changes:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       vpc_changes: ${{ steps.changes.outputs.vpc }}
@@ -55,7 +73,7 @@ jobs:
   
   deploy_vpc:
     needs: check_changes
-    if: needs.check_changes.outputs.vpc_changes == 'true'
+    if: needs.check_changes.outputs.vpc_changes == 'true' || inputs.vpc
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -73,7 +91,7 @@ jobs:
 
   deploy_irsa:
     needs: check_changes
-    if: needs.check_changes.outputs.irsa_changes == 'true'
+    if: needs.check_changes.outputs.irsa_changes == 'true' || inputs.irsa
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -94,7 +112,11 @@ jobs:
       - check_changes
       - deploy_vpc
       - deploy_irsa
-    if: ${{ always() && ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) && ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    if: |
+      always() &&
+      ( needs.deploy_vpc.result == 'success' || needs.deploy_vpc.result == 'skipped' ) &&
+      ( needs.deploy_irsa.result == 'success' || needs.deploy_irsa.result == 'skipped' ) &&
+      ( needs.check_changes.outputs.cluster_changes == 'true' || inputs.cluster )
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -114,7 +136,10 @@ jobs:
     needs:
       - check_changes
       - deploy_cluster
-    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+    if: |
+      always() &&
+      ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) &&
+      ( needs.check_changes.outputs.swf_changes == 'true' || inputs.swf )
     environment: btb
     runs-on: ubuntu-latest
     steps:
@@ -134,7 +159,10 @@ jobs:
     needs:
       - check_changes
       - deploy_cluster
-    if: ${{ always() && ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+    if: |
+      always() &&
+      ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) &&
+      ( needs.check_changes.outputs.bundle_changes == 'true' || inputs.bundles )
     environment: btb
     runs-on: self-hosted
     steps:
