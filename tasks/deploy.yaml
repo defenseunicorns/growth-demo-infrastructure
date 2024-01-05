@@ -2,7 +2,7 @@ tasks:
   - name: base
     actions:
       - description: Deploy the base UDS bundle
-        cmd: UDS_CONFIG=bundles/base/uds-config.yaml uds deploy uds-bundle-base-*.tar.zst --confirm --no-progress
+        cmd: UDS_CONFIG=bundles/base/uds-config.yaml uds deploy bundles/base/uds-bundle-base-*.tar.zst --confirm --no-progress
 
   - name: swf
     actions:
@@ -10,4 +10,4 @@ tasks:
         cmd: aws secretsmanager get-secret-value --secret-id uds-swf-btb-uds-config --query SecretString --output text > bundles/swf/uds-config.yaml
 
       - description: Deploy the SWF bundle
-        cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy uds-bundle-swf-*.tar.zst --confirm --no-progress
+        cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress

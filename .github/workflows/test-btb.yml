@@ -56,6 +56,7 @@ jobs:
               - '.github/workflows/**'
             bundle:
               - 'bundles/**'
+              - 'tasks/**'
               - '.github/workflows/**'
   
   vpc_checks:

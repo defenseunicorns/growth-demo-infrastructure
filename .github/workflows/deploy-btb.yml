@@ -69,6 +69,7 @@ jobs:
               - '.github/workflows/**'
             bundle:
               - 'bundles/**'
+              - 'tasks/**'
               - '.github/workflows/**'
   
   deploy_vpc:
