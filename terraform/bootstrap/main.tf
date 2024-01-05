@@ -69,12 +69,12 @@ module "lock_table" {
 
 module "github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
-  version = "5.30.0"
+  version = "5.33.0"
 }
 
 module "github_oidc_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
-  version = "5.30.0"
+  version = "5.33.0"
 
   name                     = "GitHubActionsAssumeWithWebIdentity"
   description              = "IAM Role that GitHub Actions assumes to perform actions on AWS"
