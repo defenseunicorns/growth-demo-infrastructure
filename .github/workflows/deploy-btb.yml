@@ -198,6 +198,7 @@ jobs:
           UDS_ADMIN_TLS_KEY: ${{ secrets.UDS_ADMIN_TLS_KEY }}
           UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
           UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
+          UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
 
       - name: Save logs
         if: always()

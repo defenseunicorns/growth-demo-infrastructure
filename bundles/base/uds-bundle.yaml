@@ -5,7 +5,7 @@ metadata:
   arch: amd64
   version: 0.1.0
 
-zarf-packages:
+packages:
   # This is a YOLO package so we deploy pre-zarf-init
   - name: pod-identity-webhook
     repository: oci://ghcr.io/defenseunicorns/packages/uds/pod-identity-webhook
@@ -17,7 +17,7 @@ zarf-packages:
   
   - name: uds-core
     repository: oci://ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.6.2
+    ref: 0.7.0
     overrides:
       loki:
         loki:
