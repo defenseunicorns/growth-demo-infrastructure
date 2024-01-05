@@ -3,6 +3,10 @@ tasks:
     description: "Remove the base UDS BTB Bundle"
     actions:
       - description: "Remove the base UDS BTB Bundle"
-        cmd: |
-          cd bundles/base
-          uds remove uds-bundle-base-*.tar.zst --confirm --no-progress
+        cmd: uds remove uds-bundle-base-*.tar.zst --confirm --no-progress
+
+  - name: swf
+    description: "Remove the SWF UDS BTB Bundle"
+    actions:
+      - description: "Remove the SWF UDS BTB Bundle"
+        cmd: uds remove uds-bundle-swf-*.tar.zst --confirm --no-progress

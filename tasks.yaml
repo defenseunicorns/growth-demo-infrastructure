@@ -20,3 +20,15 @@ tasks:
   - name: destroy-base
     actions:
       - task: destroy:base
+
+  - name: create-swf
+    actions:
+      - task: create:swf
+  
+  - name: deploy-swf
+    actions:
+      - task: deploy:swf
+
+  - name: destroy-swf
+    actions:
+      - task: destroy:swf

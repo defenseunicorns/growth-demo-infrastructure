@@ -50,7 +50,7 @@ resource "random_password" "gitlab_db_password" {
 
 resource "aws_secretsmanager_secret" "gitlab_db_secret" {
   name                    = "${local.resource_prefix}gitlab-db-secret"
-  description             = "uds-swf-${var.environment} Gitlab DB authentication token"
+  description             = "Gitlab DB authentication token"
   recovery_window_in_days = var.recovery_window
 }
 

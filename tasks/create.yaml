@@ -1,8 +1,14 @@
 tasks:
   - name: base
-    description: "Create the base UDS BTB Bundle"
     actions:
-      - description: "Create the base UDS BTB Bundle"
-        cmd: |
-          cd bundles/base
-          uds create --confirm --no-progress
+      - description: Create the base UDS bundle
+        cmd: uds create bundles/base/ --confirm --no-progress
+
+  - name: swf
+    description: Create the SWF bundle
+    actions:
+      - description: Create the SWF Dependencies Package
+        cmd: zarf package create src/swf-deps-aws/ --confirm --no-progress --architecture=${ZARF_ARCHITECTURE}
+      
+      - description: Create the SWF bundle
+        cmd: uds create bundles/swf/ --confirm --no-progress --architecture=${ZARF_ARCHITECTURE}

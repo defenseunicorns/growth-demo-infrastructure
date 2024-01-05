@@ -1,0 +1,8 @@
+# This is overwritten at deploy time by the config file from secretsmanager
+variables:
+  swf-deps-aws:
+    postgres_db_password: $POSTGRES_DB_PASSWORD
+    redis_password: $REDIS_PASSWORD
+  gitlab:
+    gitlab_redis_endpoint: $REDIS_ENDPOINT
+    postgres_db_endpoint: $POSTGRES_DB_ENDPOINT

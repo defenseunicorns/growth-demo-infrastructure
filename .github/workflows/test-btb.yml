@@ -157,6 +157,10 @@ jobs:
         shell: bash
         run: uds run create-base
 
+      - name: Test creation of the swf bundle
+        shell: bash
+        run: uds run create-swf
+
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs

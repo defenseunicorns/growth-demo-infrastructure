@@ -200,6 +200,16 @@ jobs:
           UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
 
+      - name: Create the SWF bundle
+        shell: bash
+        run: uds run create-swf
+      
+      - name: Deploy the swf bundle
+        shell: bash
+        run: uds run deploy-swf
+        env:
+          UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
+
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs

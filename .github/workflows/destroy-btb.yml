@@ -49,6 +49,14 @@ jobs:
         shell: bash
         run: uds run destroy-base
 
+      - name: Create the swf bundle
+        shell: bash
+        run: uds run create-swf
+      
+      - name: Destroy the swf bundle
+        shell: bash
+        run: uds run destroy-swf
+
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs

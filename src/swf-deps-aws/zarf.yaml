@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: swf-deps-aws
+  version: "0.1.0"
+  architecture: amd64
+
+variables:
+  - name: POSTGRES_DB_PASSWORD
+    default: "set-me"
+  - name: REDIS_PASSWORD
+    default: "set-me"
+
+components:
+  - name: gitlab-rds
+    required: true
+    manifests:
+      - name: gitlab-postgres
+        namespace: gitlab
+        files:
+          - manifests/rds/secret.yaml
+          
+  - name: gitlab-elasticache
+    required: true
+    manifests:
+      - name: gitlab-redis
+        namespace: gitlab
+        files:
+          - manifests/elasticache/secret.yaml

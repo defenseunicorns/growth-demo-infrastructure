@@ -1,0 +1,14 @@
+kind: UDSBundle
+metadata:
+  name: swf
+  description: A UDS bundle for deploying the UDS Software Factory
+  version: 0.1.0
+
+packages:
+  - name: swf-deps-aws
+    path: ../../
+    ref: "0.1.0"
+  
+  - name: gitlab
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab
+    ref: 16.5.1-3
