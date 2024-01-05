@@ -22,3 +22,32 @@ resource "aws_secretsmanager_secret_version" "uds_config_value" {
   secret_id     = aws_secretsmanager_secret.uds_config.id
   secret_string = local_sensitive_file.uds_config.content
 }
+
+data "aws_iam_role" "bastion-role" {
+  name = "${var.environment}-bastion"
+}
+
+resource "aws_iam_role_policy" "read_secret" {
+  name = "${var.environment}-read-uds-secret"
+  role = data.aws_iam_role.bastion-role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecretVersionIds"
+        ]
+        Effect   = "Allow"
+        Resource = aws_secretsmanager_secret.uds_config.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = "secretsmanager:ListSecrets"
+        Resource = "*"
+      },
+    ]
+  })
+}
