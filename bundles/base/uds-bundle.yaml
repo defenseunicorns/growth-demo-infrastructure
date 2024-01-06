@@ -2,7 +2,7 @@ kind: UDSBundle
 metadata:
   name: base
   description: Baseline bundle with zarf init, pod identity webhook, and UDS core
-  arch: amd64
+  architecture: amd64
   version: 0.1.0
 
 packages:
