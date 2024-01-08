@@ -8,7 +8,8 @@ variables:
     redis_password: $REDIS_PASSWORD
   gitlab:
     gitlab_redis_endpoint: $REDIS_ENDPOINT
-    postgres_db_endpoint: $POSTGRES_DB_ENDPOINT
+    gitlab_redis_scheme: "rediss"
+    gitlab_db_endpoint: $POSTGRES_DB_ENDPOINT
     registry_role_arn: "$REGISTRY_ROLE_ARN"
     sidekiq_role_arn: "$SIDEKIQ_ROLE_ARN"
     webservice_role_arn: "$WEBSERVICE_ROLE_ARN"

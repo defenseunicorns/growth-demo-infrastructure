@@ -10,8 +10,9 @@ variables:
     redis_password: "${random_password.elasticache_password.result}"
     region: "${var.region}"
   gitlab:
-    postgres_db_endpoint: "${module.gitlab_db.db_instance_endpoint}"
+    gitlab_db_endpoint: "${module.gitlab_db.db_instance_endpoint}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.redis.primary_endpoint_address}"
+    gitlab_redis_scheme: "rediss"
     registry_role_arn: "${module.irsa-s3.registry_role_arn}"
     sidekiq_role_arn: "${module.irsa-s3.sidekiq_role_arn}"
     webservice_role_arn: "${module.irsa-s3.webservice_role_arn}"
