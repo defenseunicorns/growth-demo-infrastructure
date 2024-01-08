@@ -41,14 +41,6 @@ jobs:
       - name: GHCR Login
         run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
-      - name: Create the base bundle
-        shell: bash
-        run: uds run create-base
-      
-      - name: Destroy the base bundle
-        shell: bash
-        run: uds run destroy-base
-
       - name: Create the swf bundle
         shell: bash
         run: uds run create-swf
@@ -56,6 +48,14 @@ jobs:
       - name: Destroy the swf bundle
         shell: bash
         run: uds run destroy-swf
+
+      - name: Create the base bundle
+        shell: bash
+        run: uds run create-base
+      
+      - name: Destroy the base bundle
+        shell: bash
+        run: uds run destroy-base
 
       - name: Save logs
         if: always()
