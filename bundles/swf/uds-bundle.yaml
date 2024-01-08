@@ -12,3 +12,19 @@ packages:
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
     ref: 16.5.1-3
+    overrides:
+      gitlab:
+        gitlab:
+          variables:
+            - name: REGISTRY_ROLE_ARN
+              description: "The ARN of the role to assume for the registry pods"
+              path: registry.annotation.irsa/role-arn
+            - name: SIDEKIQ_ROLE_ARN
+              description: "The ARN of the role to assume for the sidekiq pods"
+              path: gitlab.sidekiq.annotations.irsa/role-arn
+            - name: WEBSERVICE_ROLE_ARN
+              description: "The ARN of the role to assume for the web service pods"
+              path: gitlab.webservice.annotations.irsa/role-arn
+            - name: TOOLBOX_ROLE_ARN
+              description: "The ARN of the role to assume for the toolbox pods"
+              path: gitlab.toolbox.annotations.irsa/role-arn

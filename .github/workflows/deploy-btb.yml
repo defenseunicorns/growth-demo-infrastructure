@@ -168,10 +168,12 @@ jobs:
     needs:
       - check_changes
       - deploy_cluster
+      - deploy_swf
     if: |
       ( !cancelled() ) &&
       ( needs.check_changes.result == 'success' || needs.check_changes.result == 'skipped' ) &&
       ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) &&
+      ( needs.deploy_swf.result == 'success' || needs.deploy_swf.result == 'skipped' ) &&
       ( needs.check_changes.outputs.bundle_changes == 'true' || inputs.bundles )
     environment: btb
     runs-on: self-hosted

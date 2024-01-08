@@ -1,13 +1,21 @@
 resource "local_sensitive_file" "uds_config" {
   filename = "uds-config.yaml"
   content  = <<EOY
+shared:
+  bucket_suffix: "-${var.environment}"
+
 variables:
   swf-deps-aws:
     postgres_db_password: "${random_password.gitlab_db_password.result}"
     redis_password: "${random_password.elasticache_password.result}"
+    region: "${var.region}"
   gitlab:
     postgres_db_endpoint: "${module.gitlab_db.db_instance_endpoint}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.redis.primary_endpoint_address}"
+    registry_role_arn: "${module.irsa-s3.registry_role_arn}"
+    sidekiq_role_arn: "${module.irsa-s3.sidekiq_role_arn}"
+    webservice_role_arn: "${module.irsa-s3.webservice_role_arn}"
+    toolbox_role_arn: "${module.irsa-s3.toolbox_role_arn}"
 EOY
 }
 

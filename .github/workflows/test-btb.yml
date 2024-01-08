@@ -139,7 +139,12 @@ jobs:
     needs:
       - check_changes
       - cluster_checks
-    if: ${{ ( !cancelled() ) && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.bundle_changes == 'true' }}
+      - swf_checks
+    if: |
+      ( !cancelled() ) &&
+      ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) &&
+      ( needs.swf_checks.result == 'success' || needs.swf_checks.result == 'skipped' ) &&
+      needs.check_changes.outputs.bundle_changes == 'true'
     environment: btb
     runs-on: self-hosted
     steps:

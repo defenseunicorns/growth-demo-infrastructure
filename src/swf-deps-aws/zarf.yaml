@@ -27,3 +27,11 @@ components:
         namespace: gitlab
         files:
           - manifests/elasticache/secret.yaml
+
+  - name: gitlab-s3
+    required: true
+    manifests:
+      - name: gitlab-s3
+        namespace: gitlab
+        files:
+          - manifests/s3/secret.yaml

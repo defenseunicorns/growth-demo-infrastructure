@@ -66,7 +66,7 @@ resource "aws_iam_role" "s3_bucket_role" {
         Effect = "Allow"
         Principal = {
           Service = "ec2.amazonaws.com"
-          "Federated" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          "Federated" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
         }
         "Condition" : {
           "StringEquals" : {
