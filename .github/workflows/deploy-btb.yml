@@ -202,6 +202,7 @@ jobs:
           UDS_TENANT_TLS_CERT: ${{ secrets.UDS_TENANT_TLS_CERT }}
           UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
+          UDS_REGION: ${{ vars.AWS_REGION }}
 
       - name: Create the SWF bundle
         shell: bash
