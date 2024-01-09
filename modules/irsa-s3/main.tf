@@ -1,5 +1,5 @@
-locals {
-  oidc_provider = "${var.environment}-oidc.s3.${var.region}.${data.aws_partition.current.partition}"
+data "aws_s3_bucket" "oidc_bucket" {
+  bucket = "${var.environment}-oidc"
 }
 
 data "aws_partition" "current" {}
@@ -66,12 +66,12 @@ resource "aws_iam_role" "s3_bucket_role" {
         Effect = "Allow"
         Principal = {
           Service = "ec2.amazonaws.com"
-          "Federated" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
+          "Federated" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}"
         }
         "Condition" : {
           "StringEquals" : {
-            "${local.oidc_provider}:aud" : "irsa",
-            "${local.oidc_provider}:sub" : "system:serviceaccount:gitlab:${each.value}"
+            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:aud" : "irsa",
+            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:sub" : "system:serviceaccount:gitlab:${each.value}"
           }
         }
       }
