@@ -9,7 +9,7 @@ packages:
   # This is a YOLO package so we deploy pre-zarf-init
   - name: pod-identity-webhook
     repository: oci://ghcr.io/defenseunicorns/packages/uds/pod-identity-webhook
-    ref: 0.1.1
+    ref: 0.1.2
 
   - name: init
     repository: oci://ghcr.io/defenseunicorns/packages/init
