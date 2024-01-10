@@ -17,7 +17,7 @@ packages:
   
   - name: uds-core
     repository: oci://ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.7.1
+    ref: 0.7.2
     overrides:
       loki:
         loki:
