@@ -1,3 +1,11 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_partition" "current" {}
+
+locals {
+  permissions_boundary = var.permissions_boundary_name == null ? null : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/${var.permissions_boundary_name}"
+}
+
 #######################################
 # Backend State Bucket
 #######################################
@@ -80,7 +88,7 @@ module "github_oidc_role" {
   description              = "IAM Role that GitHub Actions assumes to perform actions on AWS"
   force_detach_policies    = true
   max_session_duration     = 10800 # 3 hours
-  permissions_boundary_arn = var.permissions_boundary
+  permissions_boundary_arn = local.permissions_boundary
   policies                 = var.github_policies
 
   subjects = ["repo:defenseunicorns/uds-prod-infrastructure:*"]

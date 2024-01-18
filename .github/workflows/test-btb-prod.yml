@@ -1,0 +1,168 @@
+name: Test Burn the Boats in Prod
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+  packages: read
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      vpc_changes: ${{ steps.changes.outputs.vpc }}
+      irsa_changes: ${{ steps.changes.outputs.irsa }}
+      cluster_changes: ${{ steps.changes.outputs.cluster }}
+      swf_changes: ${{ steps.changes.outputs.swf }}
+      bundle_changes: ${{ steps.changes.outputs.bundle }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Check paths
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            vpc:
+              - 'terraform/vpc/**'
+              - 'env/btb-prod/vpc.tfvars'
+              - '.github/actions/terraform-test/**'
+              - '.github/workflows/**'
+            irsa:
+              - 'terraform/irsa/**'
+              - 'env/btb-prod/irsa.tfvars'
+              - '.github/actions/terraform-deploy/**'
+              - '.github/workflows/**'
+            cluster:
+              - 'terraform/cluster/**'
+              - 'env/btb-prod/cluster.tfvars'
+              - '.github/actions/terraform-test/**'
+              - '.github/workflows/**'
+            swf:
+              - 'terraform/swf/**'
+              - 'modules/irsa-s3/**'
+              - 'modules/irsa-rdb/**'
+              - 'modules/irsa-elasticache/**'
+              - 'env/btb-prod/swf.tfvars'
+              - '.github/actions/terraform-test/**'
+              - '.github/workflows/**'
+            bundle:
+              - 'bundles/**'
+              - 'tasks/**'
+              - '.github/workflows/**'
+
+  vpc_checks:
+    needs: check_changes
+    if: needs.check_changes.outputs.vpc_changes == 'true'
+    environment: btb-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb-prod
+          target: vpc
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
+  irsa_checks:
+    needs: check_changes
+    if: needs.check_changes.outputs.irsa_changes == 'true'
+    environment: btb-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb-prod
+          target: irsa
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
+  cluster_checks:
+    needs:
+      - check_changes
+      - vpc_checks
+      - irsa_checks
+    if: ${{ ( !cancelled() ) && ( needs.vpc_checks.result == 'success' || needs.vpc_checks.result == 'skipped' ) && ( needs.irsa_checks.result == 'success' || needs.irsa_checks.result == 'skipped' ) && needs.check_changes.outputs.cluster_changes == 'true' }}
+    environment: btb-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb-prod
+          target: cluster
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+  swf_checks:
+    needs:
+      - check_changes
+      - cluster_checks
+    if: ${{ ( !cancelled() ) && ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) && needs.check_changes.outputs.swf_changes == 'true' }}
+    environment: btb-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/terraform-test
+        with:
+          environment: btb-prod
+          target: swf
+        env:
+          AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PERMISSIONS_BOUNDARY: ${{ vars.PERMISSIONS_BOUNDARY }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+          LOCK_TABLE: ${{ vars.LOCK_TABLE }}
+
+  bundle_checks:
+    needs:
+      - check_changes
+      - cluster_checks
+      - swf_checks
+    if: |
+      ( !cancelled() ) &&
+      ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) &&
+      ( needs.swf_checks.result == 'success' || needs.swf_checks.result == 'skipped' ) &&
+      needs.check_changes.outputs.bundle_changes == 'true'
+    environment: btb-prod
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb-prod
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
+
+      - name: Test creation of base bundle
+        shell: bash
+        run: uds run create-base
+
+      - name: Test creation of the swf bundle
+        shell: bash
+        run: uds run create-swf
+
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs

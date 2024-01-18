@@ -4,8 +4,8 @@ variable "github_policies" {
   default     = {}
 }
 
-variable "permissions_boundary" {
-  description = "IAM permissions boundary ARN"
+variable "permissions_boundary_name" {
+  description = "IAM permissions boundary name"
   type        = string
   default     = null
 }

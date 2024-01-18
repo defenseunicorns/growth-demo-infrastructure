@@ -19,6 +19,7 @@ provider "aws" {
       terraform   = true
       repository  = "github.com/defenseunicorns/uds-prod-infrastructure"
       environment = var.environment
+      PermissionsBoundary = var.permissions_boundary_name
     }
   }
 }
