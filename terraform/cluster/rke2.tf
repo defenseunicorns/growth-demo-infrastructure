@@ -1,5 +1,5 @@
 locals {
-  cluster_name = "uds-${var.environment}-cluster"
+  cluster_name = "uds-${var.environment}"
 
   pre_userdata = <<-EOF
 echo "Adding AWS cloud provider manifest."
