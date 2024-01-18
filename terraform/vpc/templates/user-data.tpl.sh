@@ -1,9 +1,9 @@
 #! /bin/bash
 sudo yum install -y git libicu
-curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/uds-cli/releases/download/v0.5.2/uds-cli_v0.5.2_Linux_amd64 -o uds
+curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/uds-cli/releases/download/v0.6.2/uds-cli_v0.6.2_Linux_amd64 -o uds
 chmod +x uds
 sudo mv uds /usr/local/bin/
-curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/zarf/releases/download/v0.31.4/zarf_v0.31.4_Linux_amd64 -o zarf
+curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/zarf/releases/download/v0.32.1/zarf_v0.32.1_Linux_amd64 -o zarf
 chmod +x zarf
 sudo mv zarf /usr/local/bin
 cd ~ && mkdir actions-runner && cd actions-runner

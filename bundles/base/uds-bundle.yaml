@@ -9,15 +9,15 @@ packages:
   # This is a YOLO package so we deploy pre-zarf-init
   - name: pod-identity-webhook
     repository: oci://ghcr.io/defenseunicorns/packages/uds/pod-identity-webhook
-    ref: 0.1.2
+    ref: 0.1.2-amd64
 
   - name: init
     repository: oci://ghcr.io/defenseunicorns/packages/init
-    ref: v0.31.4
-  
+    ref: v0.32.1
+
   - name: uds-core
     repository: oci://ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.7.2
+    ref: 0.8.0
     overrides:
       loki:
         loki:
