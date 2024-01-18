@@ -1,4 +1,5 @@
 locals {
+  # NOTE: This needs to match the cluster name in ../irsa/iam.tf
   cluster_name = "uds-${var.environment}"
 
   pre_userdata = <<-EOF

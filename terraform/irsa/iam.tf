@@ -2,7 +2,8 @@
 // IAM to support RKE2 server nodes
 //
 locals {
-  cluster_name = "uds-${var.environment}-cluster"
+  # NOTE: This needs to match the cluster name in ../cluster/rke2.tf
+  cluster_name = "uds-${var.environment}"
 }
 
 data "aws_partition" "current" {}
