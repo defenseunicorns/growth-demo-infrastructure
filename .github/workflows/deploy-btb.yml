@@ -59,7 +59,7 @@ jobs:
               - 'env/btb/cluster.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
-            swf:  
+            swf:
               - 'terraform/swf/**'
               - 'modules/irsa-s3/**'
               - 'modules/irsa-rdb/**'
@@ -71,7 +71,7 @@ jobs:
               - 'bundles/**'
               - 'tasks/**'
               - '.github/workflows/**'
-  
+
   deploy_vpc:
     needs: check_changes
     if: |
@@ -207,7 +207,7 @@ jobs:
       - name: Create the SWF bundle
         shell: bash
         run: uds run create-swf
-      
+
       - name: Deploy the swf bundle
         shell: bash
         run: uds run deploy-swf

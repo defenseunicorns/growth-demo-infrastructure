@@ -5,7 +5,8 @@ tasks:
         cmd: |
           set -e
           mkdir -p ~/.kube
-          aws s3 cp s3://uds-$ENVIRONMENT-cluster-rke2/rke2.yaml ~/.kube/config
+          # NOTE: This must match `cluster_name` in ../terraform/cluster/rke2.tf.
+          aws s3 cp s3://uds-$ENVIRONMENT-rke2/rke2.yaml ~/.kube/config
           set +e
 
       - description: Cleanup single self-hosted runner

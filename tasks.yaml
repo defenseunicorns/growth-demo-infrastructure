@@ -24,7 +24,7 @@ tasks:
   - name: create-swf
     actions:
       - task: create:swf
-  
+
   - name: deploy-swf
     actions:
       - task: deploy:swf
