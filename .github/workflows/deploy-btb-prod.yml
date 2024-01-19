@@ -111,7 +111,7 @@ jobs:
       ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) &&
       ( needs.deploy_swf.result == 'success' || needs.deploy_swf.result == 'skipped' )
     environment: btb-prod
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod]
     steps:
       - uses: actions/checkout@v4
 
