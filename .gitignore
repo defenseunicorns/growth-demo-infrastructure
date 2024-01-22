@@ -36,3 +36,4 @@ terraform.rc
 
 # Zarf and UDS things
 *.tar.zst
+zarf-sbom

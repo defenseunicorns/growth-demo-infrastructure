@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: aws-lb-controller
+  version: "0.1.0"
+  architecture: amd64
+  # This package must be YOLO since it is installed in kube-system
+  yolo: true
+
+variables:
+  - name: CLUSTER_NAME
+    description: "Name of the cluster"
+    prompt: true
+  - name: LB_ROLE_ARN
+    description: "ARN of the IAM role with sufficient access matching https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.6/deploy/installation/#configure-iam"
+    prompt: true
+
+components:
+  - name: aws-lb-controller
+    required: true
+    charts:
+      - name: aws-load-balancer-controller
+        url: https://aws.github.io/eks-charts
+        version: "1.6.2"
+        namespace: "kube-system"
+        valuesFiles:
+          - "values.yaml"

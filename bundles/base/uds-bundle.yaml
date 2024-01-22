@@ -3,13 +3,17 @@ metadata:
   name: base
   description: Baseline bundle with zarf init, pod identity webhook, and UDS core
   architecture: amd64
-  version: 0.1.0
+  version: 0.2.0
 
 packages:
-  # This is a YOLO package so we deploy pre-zarf-init
+  # These are YOLO packages so we deploy pre-zarf-init
   - name: pod-identity-webhook
     repository: oci://ghcr.io/defenseunicorns/packages/uds/pod-identity-webhook
     ref: 0.1.2-amd64
+
+  - name: aws-lb-controller
+    path: ../../
+    ref: "0.1.0"
 
   - name: init
     repository: oci://ghcr.io/defenseunicorns/packages/init
@@ -17,7 +21,7 @@ packages:
 
   - name: uds-core
     repository: oci://ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.8.0
+    ref: 0.9.1-registry1
     overrides:
       loki:
         loki:
@@ -26,6 +30,16 @@ packages:
             - path: "global.dnsService"
               value: "rke2-coredns-rke2-coredns"
       istio-admin-gateway:
+        gateway:
+          # Assume dynamic IP allocation for now
+          # variables:
+          #   - name: ADMIN_PRIVATE_IP_ALLOCATIONS
+          #     path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-private-ipv4-addresses
+          values:
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-type
+              value: "external"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
+              value: "internal"
         uds-istio-config:
           variables:
             - name: ADMIN_TLS_CERT
@@ -34,7 +48,17 @@ packages:
             - name: ADMIN_TLS_KEY
               description: "The TLS key for the admin gateway (must be base64 encoded)"
               path: tls.key
+
       istio-tenant-gateway:
+        gateway:
+          variables:
+            - name: TENANT_EIP_ALLOCATIONS
+              path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-eip-allocations
+          values:
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-type
+              value: "external"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
+              value: "internet-facing"
         uds-istio-config:
           variables:
             - name: TENANT_TLS_CERT
@@ -43,3 +67,14 @@ packages:
             - name: TENANT_TLS_KEY
               description: "The TLS key for the tenant gateway (must be base64 encoded)"
               path: tls.key
+
+      istio-passthrough-gateway:
+        gateway:
+          variables:
+            - name: PASSTHROUGH_EIP_ALLOCATIONS
+              path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-eip-allocations
+          values:
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-type
+              value: "external"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
+              value: "internet-facing"

@@ -7,6 +7,22 @@ locals {
   vpc_name = "uds-${var.environment}"
 }
 
+resource "aws_eip" "tenant_gateway_eip" {
+  count  = length(local.azs)
+  domain = "vpc"
+  tags = {
+    Name = "${var.environment} - tenant gateway"
+  }
+}
+
+resource "aws_eip" "passthrough_gateway_eip" {
+  count  = length(local.azs)
+  domain = "vpc"
+  tags = {
+    Name = "${var.environment} - passthrough gateway"
+  }
+}
+
 module "vpc" {
   source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.1.0"
 
@@ -23,4 +39,12 @@ module "vpc" {
   enable_nat_gateway                = true
   create_database_subnet_group      = true
   vpc_flow_log_permissions_boundary = var.permissions_boundary
+
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
+  }
 }

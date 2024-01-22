@@ -1,28 +1,39 @@
+data "aws_eips" "tenant" {
+  filter {
+    name   = "tag:Name"
+    values = ["${var.environment}*tenant*"]
+  }
+}
+
+data "aws_eips" "passthrough" {
+  filter {
+    name   = "tag:Name"
+    values = ["${var.environment}*passthrough*"]
+  }
+}
+
 resource "local_sensitive_file" "uds_config" {
   filename = "uds-config.yaml"
   content  = <<EOY
-shared:
-  bucket_suffix: "-${var.environment}"
+options:
+  architecture: amd64
 
 variables:
-  swf-deps-aws:
-    postgres_db_password: "${random_password.gitlab_db_password.result}"
-    redis_password: "${random_password.elasticache_password.result}"
-    region: "${var.region}"
-  gitlab:
-    gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
-    gitlab_redis_endpoint: "${aws_elasticache_replication_group.redis.primary_endpoint_address}"
-    gitlab_redis_scheme: "rediss"
-    registry_role_arn: "${module.irsa-s3.registry_role_arn}"
-    sidekiq_role_arn: "${module.irsa-s3.sidekiq_role_arn}"
-    webservice_role_arn: "${module.irsa-s3.webservice_role_arn}"
-    toolbox_role_arn: "${module.irsa-s3.toolbox_role_arn}"
+  init:
+    # Workaround for SELinux EBS issue - https://github.com/bottlerocket-os/bottlerocket/issues/2417
+    registry_hpa_enable: false
+  aws-lb-controller:
+    cluster_name: "${var.environment}"
+    lb_role_arn: "${aws_iam_role.aws_lb_controller_role.arn}"
+  uds-core:
+    tenant_eip_allocations: "${join(",", data.aws_eips.tenant.allocation_ids)}"
+    passthrough_eip_allocations: "${join(",", data.aws_eips.passthrough.allocation_ids)}"
 EOY
 }
 
 resource "aws_secretsmanager_secret" "uds_config" {
-  name                    = "${local.resource_prefix}uds-config"
-  description             = "uds-swf-${var.environment} UDS Config file"
+  name                    = "uds-base-${var.environment}-uds-config"
+  description             = "uds-base-${var.environment} UDS Config file"
   recovery_window_in_days = var.recovery_window
 }
 
@@ -37,7 +48,7 @@ data "aws_iam_role" "bastion-role" {
 }
 
 resource "aws_iam_role_policy" "read_secret" {
-  name = "${var.environment}-read-uds-swf-secret"
+  name = "${var.environment}-read-uds-base-secret"
   role = data.aws_iam_role.bastion-role.id
   policy = jsonencode({
     Version = "2012-10-17"

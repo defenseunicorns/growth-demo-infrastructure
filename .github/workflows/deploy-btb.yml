@@ -203,6 +203,7 @@ jobs:
           UDS_TENANT_TLS_KEY: ${{ secrets.UDS_TENANT_TLS_KEY }}
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
           UDS_REGION: ${{ vars.AWS_REGION }}
+          ENVIRONMENT: btb
 
       - name: Create the SWF bundle
         shell: bash
@@ -213,6 +214,7 @@ jobs:
         run: uds run deploy-swf
         env:
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
+          ENVIRONMENT: btb
 
       - name: Save logs
         if: always()

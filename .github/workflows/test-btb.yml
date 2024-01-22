@@ -146,7 +146,7 @@ jobs:
       ( needs.swf_checks.result == 'success' || needs.swf_checks.result == 'skipped' ) &&
       needs.check_changes.outputs.bundle_changes == 'true'
     environment: btb
-    runs-on: self-hosted
+    runs-on: [self-hosted, staging]
     steps:
       - uses: actions/checkout@v4
 

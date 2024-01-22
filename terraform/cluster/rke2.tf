@@ -1,3 +1,11 @@
+data "aws_partition" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_s3_bucket" "oidc_bucket" {
+  bucket = "${var.environment}-oidc"
+}
+
 locals {
   # NOTE: This needs to match the cluster name in ../irsa/iam.tf
   cluster_name = "uds-${var.environment}"
@@ -146,11 +154,6 @@ data "aws_subnets" "private_subnets" {
   }
 }
 
-data "aws_s3_bucket" "oidc_bucket" {
-  bucket = "${var.environment}-oidc"
-}
-
-
 module "rke2" {
   source = "github.com/rancherfederal/rke2-aws-tf?ref=v2.4.0"
 
@@ -260,4 +263,45 @@ resource "aws_security_group_rule" "quickstart_ssh" {
   security_group_id = module.rke2.cluster_data.cluster_sg
   type              = "ingress"
   cidr_blocks       = var.public_access ? ["0.0.0.0/0"] : [data.aws_vpc.vpc.cidr_block]
+}
+
+#
+# AWS Load Balancer Controller
+#
+resource "aws_iam_policy" "aws_lb_controller_policy" {
+  name = "${var.environment}-aws-lb-controller-policy"
+  policy = templatefile("templates/aws_lb_controller_policy.json", {
+    vpc_arn       = data.aws_vpc.vpc.arn
+    arn_partition = data.aws_partition.current.partition
+  })
+}
+
+resource "aws_iam_role" "aws_lb_controller_role" {
+  name = "${var.environment}-aws-lb-controller-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+          "Federated" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}"
+        }
+        "Condition" : {
+          "StringEquals" : {
+            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:aud" : "irsa",
+            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:sub" : "system:serviceaccount:kube-system:aws-lb-controller"
+          }
+        }
+      }
+    ]
+  })
+
+  permissions_boundary = var.permissions_boundary
+}
+
+resource "aws_iam_role_policy_attachment" "aws_lb_controller_iam_attachment" {
+  role       = aws_iam_role.aws_lb_controller_role.name
+  policy_arn = aws_iam_policy.aws_lb_controller_policy.arn
 }

@@ -94,3 +94,11 @@ variable "agent_extra_block_device_mappings" {
   type    = list(map(string))
   default = []
 }
+
+# UDS Config Variables
+
+variable "recovery_window" {
+  description = "Number of days to retain secret before permanent deletion"
+  type        = number
+  default     = 30
+}

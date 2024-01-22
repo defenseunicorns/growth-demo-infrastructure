@@ -48,6 +48,8 @@ variable "elasticache_cluster_name" {
   default     = "uds-gitlab-cluster"
 }
 
+# UDS Config Variables
+
 variable "recovery_window" {
   description = "Number of days to retain secret before permanent deletion"
   type        = number

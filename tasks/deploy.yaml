@@ -1,13 +1,18 @@
 tasks:
   - name: base
     actions:
+      - description: Retrieve the config file from AWS Secrets Manager
+        # Ensure the config file secret name here lines up with terraform/cluster/uds-config.tf
+        cmd: aws secretsmanager get-secret-value --secret-id uds-base-${ENVIRONMENT}-uds-config --query SecretString --output text > bundles/base/uds-config.yaml
+
       - description: Deploy the base UDS bundle
         cmd: UDS_CONFIG=bundles/base/uds-config.yaml uds deploy bundles/base/uds-bundle-base-*.tar.zst --confirm --no-progress
 
   - name: swf
     actions:
       - description: Retrieve the config file from AWS Secrets Manager
-        cmd: aws secretsmanager get-secret-value --secret-id uds-swf-btb-uds-config --query SecretString --output text > bundles/swf/uds-config.yaml
+        # Ensure the config file secret name here lines up with terraform/swf/uds-config.tf
+        cmd: aws secretsmanager get-secret-value --secret-id uds-swf-${ENVIRONMENT}-uds-config --query SecretString --output text > bundles/swf/uds-config.yaml
 
       - description: Deploy the SWF bundle
         cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress

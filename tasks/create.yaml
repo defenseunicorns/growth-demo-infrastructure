@@ -1,6 +1,9 @@
 tasks:
   - name: base
     actions:
+      - description: Create the AWS LB Package
+        cmd: zarf package create src/aws-lb-controller/ --confirm --no-progress
+
       - description: Create the base UDS bundle
         cmd: uds create bundles/base/ --confirm --no-progress
 
