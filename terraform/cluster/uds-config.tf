@@ -26,8 +26,9 @@ variables:
     cluster_name: "${var.environment}"
     lb_role_arn: "${aws_iam_role.aws_lb_controller_role.arn}"
   uds-core:
-    tenant_eip_allocations: "${join(",", data.aws_eips.tenant.allocation_ids)}"
-    passthrough_eip_allocations: "${join(",", data.aws_eips.passthrough.allocation_ids)}"
+    # These are escaped with commas to workaround a uds/zarf parsing issue (4x \ for terraform to print out 2x \ into the file)
+    tenant_eip_allocations: "${join("\\\\,", data.aws_eips.tenant.allocation_ids)}"
+    passthrough_eip_allocations: "${join("\\\\,", data.aws_eips.passthrough.allocation_ids)}"
 EOY
 }
 
