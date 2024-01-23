@@ -40,6 +40,8 @@ packages:
               value: "external"
             - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
               value: "internal"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-attributes
+              value: "load_balancing.cross_zone.enabled=true"
         uds-istio-config:
           variables:
             - name: ADMIN_TLS_CERT
@@ -59,6 +61,8 @@ packages:
               value: "external"
             - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
               value: "internet-facing"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-attributes
+              value: "load_balancing.cross_zone.enabled=true"
         uds-istio-config:
           variables:
             - name: TENANT_TLS_CERT
@@ -78,3 +82,5 @@ packages:
               value: "external"
             - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-scheme
               value: "internet-facing"
+            - path: service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-attributes
+              value: "load_balancing.cross_zone.enabled=true"
