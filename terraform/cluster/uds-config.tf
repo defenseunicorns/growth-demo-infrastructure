@@ -23,7 +23,7 @@ variables:
     # Workaround for SELinux EBS issue - https://github.com/bottlerocket-os/bottlerocket/issues/2417
     registry_hpa_enable: false
   aws-lb-controller:
-    cluster_name: "${var.environment}"
+    cluster_name: "uds-${var.environment}"
     lb_role_arn: "${aws_iam_role.aws_lb_controller_role.arn}"
   uds-core:
     # These are escaped with commas to workaround a uds/zarf parsing issue (4x \ for terraform to print out 2x \ into the file)

@@ -58,7 +58,8 @@ jobs:
               - 'bundles/**'
               - 'tasks/**'
               - '.github/workflows/**'
-  
+              - 'terraform/**/uds-config.tf'
+
   vpc_checks:
     needs: check_changes
     if: needs.check_changes.outputs.vpc_changes == 'true'

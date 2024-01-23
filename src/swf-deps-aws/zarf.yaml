@@ -19,7 +19,7 @@ components:
         namespace: gitlab
         files:
           - manifests/rds/secret.yaml
-          
+
   - name: gitlab-elasticache
     required: true
     manifests:

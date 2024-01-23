@@ -71,6 +71,7 @@ jobs:
               - 'bundles/**'
               - 'tasks/**'
               - '.github/workflows/**'
+              - 'terraform/**/uds-config.tf'
 
   deploy_vpc:
     needs: check_changes
