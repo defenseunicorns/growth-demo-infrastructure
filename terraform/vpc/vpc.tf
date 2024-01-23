@@ -5,6 +5,8 @@ data "aws_availability_zones" "available" {
 locals {
   azs      = [for az_name in slice(data.aws_availability_zones.available.names, 0, min(length(data.aws_availability_zones.available.names), var.num_azs)) : az_name]
   vpc_name = "uds-${var.environment}"
+  # NOTE: This needs to match the cluster name in ../cluster/rke2.tf
+  cluster_name = "uds-${var.environment}"
 }
 
 resource "aws_eip" "tenant_gateway_eip" {
@@ -41,10 +43,12 @@ module "vpc" {
   vpc_flow_log_permissions_boundary = var.permissions_boundary
 
   public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
+    "kubernetes.io/role/elb"                      = 1
+    "kubernetes.io/cluster/${local.cluster_name}" = "owned"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
+    "kubernetes.io/role/internal-elb"             = 1
+    "kubernetes.io/cluster/${local.cluster_name}" = "owned"
   }
 }

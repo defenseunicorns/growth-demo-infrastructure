@@ -8,6 +8,7 @@ data "aws_s3_bucket" "oidc_bucket" {
 
 locals {
   # NOTE: This needs to match the cluster name in ../irsa/iam.tf
+  # and ../vpc/vpc.tf
   cluster_name = "uds-${var.environment}"
 
   pre_userdata = <<-EOF
