@@ -2,7 +2,7 @@
 kind: ZarfPackageConfig
 metadata:
   name: aws-lb-controller
-  version: "0.1.0"
+  version: "0.1.1"
   architecture: amd64
   # This package must be YOLO since it is installed in kube-system
   yolo: true

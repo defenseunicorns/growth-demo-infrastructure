@@ -1,6 +1,6 @@
 clusterName: ###ZARF_VAR_CLUSTER_NAME###
 serviceAccount:
   annotations:
-    irsa/role-arn: ###ZARF_VAR_LB_ROLE_ARN######
+    irsa/role-arn: ###ZARF_VAR_LB_ROLE_ARN###
   # Hardcoded name for simplicity on the IAM policy
   name: aws-lb-controller

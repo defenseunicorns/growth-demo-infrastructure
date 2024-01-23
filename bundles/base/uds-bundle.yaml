@@ -3,7 +3,7 @@ metadata:
   name: base
   description: Baseline bundle with zarf init, pod identity webhook, and UDS core
   architecture: amd64
-  version: 0.2.0
+  version: 0.2.1
 
 packages:
   # These are YOLO packages so we deploy pre-zarf-init
@@ -13,7 +13,7 @@ packages:
 
   - name: aws-lb-controller
     path: ../../
-    ref: "0.1.0"
+    ref: "0.1.1"
 
   - name: init
     repository: oci://ghcr.io/defenseunicorns/packages/init
