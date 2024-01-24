@@ -6,7 +6,9 @@ metadata:
   architecture: amd64
 
 variables:
-  - name: POSTGRES_DB_PASSWORD
+  - name: GITLAB_DB_PASSWORD
+    default: "set-me"
+  - name: SONARQUBE_DB_PASSWORD
     default: "set-me"
   - name: REDIS_PASSWORD
     default: "set-me"
@@ -18,7 +20,7 @@ components:
       - name: gitlab-postgres
         namespace: gitlab
         files:
-          - manifests/rds/secret.yaml
+          - manifests/rds/gitlab-secret.yaml
 
   - name: gitlab-elasticache
     required: true
@@ -35,3 +37,11 @@ components:
         namespace: gitlab
         files:
           - manifests/s3/secret.yaml
+
+  - name: sonarqube-rds
+    required: true
+    manifests:
+      - name: sonarqube-rds
+        namespace: sonarqube
+        files:
+          - manifests/rds/sonarqube-secret.yaml

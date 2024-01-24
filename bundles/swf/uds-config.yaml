@@ -4,7 +4,8 @@ shared:
 
 variables:
   swf-deps-aws:
-    postgres_db_password: $POSTGRES_DB_PASSWORD
+    gitlab_db_password: $GITLAB_DB_PASSWORD
+    sonarqube_db_password: $SONARQUBE_DB_PASSWORD
     redis_password: $REDIS_PASSWORD
   gitlab:
     gitlab_redis_endpoint: $REDIS_ENDPOINT
@@ -14,3 +15,5 @@ variables:
     sidekiq_role_arn: "$SIDEKIQ_ROLE_ARN"
     webservice_role_arn: "$WEBSERVICE_ROLE_ARN"
     toolbox_role_arn: "$TOOLBOX_ROLE_ARN"
+  sonarqube:
+    sonarqube_db_endpoint: $SONARQUBE_DB_ENDPOINT

@@ -6,7 +6,8 @@ shared:
 
 variables:
   swf-deps-aws:
-    postgres_db_password: "${random_password.gitlab_db_password.result}"
+    gitlab_db_password: "${random_password.gitlab_db_password.result}"
+    sonarqube_db_password: "${random_password.sonarqube_db_password.result}"
     redis_password: "${random_password.elasticache_password.result}"
     region: "${var.region}"
   gitlab:
@@ -17,6 +18,8 @@ variables:
     sidekiq_role_arn: "${module.irsa-s3.sidekiq_role_arn}"
     webservice_role_arn: "${module.irsa-s3.webservice_role_arn}"
     toolbox_role_arn: "${module.irsa-s3.toolbox_role_arn}"
+  sonarqube:
+    sonarqube_db_endpoint: "${element(split(":", module.sonarqube_db.db_instance_endpoint), 0)}"
 EOY
 }
 

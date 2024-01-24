@@ -28,3 +28,7 @@ packages:
             - name: TOOLBOX_ROLE_ARN
               description: "The ARN of the role to assume for the toolbox pods"
               path: gitlab.toolbox.serviceAccount.annotations.irsa/role-arn
+
+  - name: sonarqube
+    repository: ghcr.io/defenseunicorns/packages/uds/sonarqube
+    ref: 8.0.3-uds.4-upstream-ce

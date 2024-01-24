@@ -34,6 +34,12 @@ variable "gitlab_db_name" {
   default     = "gitlabdb"
 }
 
+variable "sonarqube_db_name" {
+  description = "Name of the Sonarqube database."
+  type        = string
+  default     = "sonarqubedb"
+}
+
 variable "force_destroy" {
   description = "Option to set force destroy"
   type        = bool
