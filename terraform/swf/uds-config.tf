@@ -14,12 +14,19 @@ variables:
     gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.redis.primary_endpoint_address}"
     gitlab_redis_scheme: "rediss"
-    registry_role_arn: "${module.irsa-s3.registry_role_arn}"
-    sidekiq_role_arn: "${module.irsa-s3.sidekiq_role_arn}"
-    webservice_role_arn: "${module.irsa-s3.webservice_role_arn}"
-    toolbox_role_arn: "${module.irsa-s3.toolbox_role_arn}"
+    registry_role_arn: "${module.gitlab_irsa-s3.bucket_roles["gitlab-registry"].arn}"
+    sidekiq_role_arn: "${module.gitlab_irsa-s3.bucket_roles["gitlab-sidekiq"].arn}"
+    webservice_role_arn: "${module.gitlab_irsa-s3.bucket_roles["gitlab-webservice"].arn}"
+    toolbox_role_arn: "${module.gitlab_irsa-s3.bucket_roles["gitlab-toolbox"].arn}"
   sonarqube:
     sonarqube_db_endpoint: "${element(split(":", module.sonarqube_db.db_instance_endpoint), 0)}"
+  mattermost:
+    mattermost_db_endpoint: "${element(split(":", module.mattermost_db.db_instance_endpoint), 0)}"
+    mattermost_db_password: "${random_password.mattermost_db_password.result}"
+    mattermost_bucket: "uds-mattermost-${var.environment}"
+    mattermost_region: "${var.region}"
+    mattermost_s3_endpoint: "s3.${var.region}.amazonaws.com"
+    mattermost_role_arn: "${module.mattermost_irsa-s3.bucket_roles["mattermost"].arn}"
 EOY
 }
 

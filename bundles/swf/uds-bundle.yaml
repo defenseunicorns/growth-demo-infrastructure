@@ -32,3 +32,31 @@ packages:
   - name: sonarqube
     repository: ghcr.io/defenseunicorns/packages/uds/sonarqube
     ref: 8.0.3-uds.4-upstream-ce
+
+  - name: mattermost
+    repository: ghcr.io/defenseunicorns/packages/uds/mattermost
+    ref: 9.4.1-uds.0-registry1
+    overrides:
+      mattermost:
+        uds-mattermost-config:
+          variables:
+            - name: MATTERMOST_DB_ENDPOINT
+              path: "postgres.host"
+            - name: MATTERMOST_DB_PASSWORD
+              path: "postgres.password"
+            - name: MATTERMOST_BUCKET
+              path: "objectStorage.bucket"
+            - name: MATTERMOST_REGION
+              path: "objectStorage.region"
+            - name: MATTERMOST_S3_ENDPOINT
+              path: "objectStorage.endpoint"
+        mattermost-enterprise-edition:
+          variables:
+            - name: MATTERMOST_ROLE_ARN
+              path: "serviceAccount.annotations.irsa/role-arn"
+          # Enable plugin uploads for MM AI plugin
+          values:
+            - path: "mattermostApp.extraEnv"
+              value:
+                - name: MM_PLUGINSETTINGS_ENABLEUPLOADS
+                  value: "true"

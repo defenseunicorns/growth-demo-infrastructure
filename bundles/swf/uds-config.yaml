@@ -7,13 +7,21 @@ variables:
     gitlab_db_password: $GITLAB_DB_PASSWORD
     sonarqube_db_password: $SONARQUBE_DB_PASSWORD
     redis_password: $REDIS_PASSWORD
+    region: $REGION
   gitlab:
     gitlab_redis_endpoint: $REDIS_ENDPOINT
     gitlab_redis_scheme: "rediss"
-    gitlab_db_endpoint: $POSTGRES_DB_ENDPOINT
+    gitlab_db_endpoint: $GITLAB_POSTGRES_DB_ENDPOINT
     registry_role_arn: "$REGISTRY_ROLE_ARN"
     sidekiq_role_arn: "$SIDEKIQ_ROLE_ARN"
     webservice_role_arn: "$WEBSERVICE_ROLE_ARN"
     toolbox_role_arn: "$TOOLBOX_ROLE_ARN"
   sonarqube:
     sonarqube_db_endpoint: $SONARQUBE_DB_ENDPOINT
+  mattermost:
+    mattermost_db_endpoint: $MATTERMOST_DB_ENDPOINT
+    mattermost_db_password: $MATTERMOST_DB_PASSWORD
+    mattermost_bucket: $MATTERMOST_BUCKET
+    mattermost_region: $MATTERMOST_REGION
+    mattermost_s3_endpoint: $MATTERMOST_S3_ENDPOINT
+    mattermost_role_arn: "$MATTERMOST_ROLE_ARN"

@@ -19,6 +19,11 @@ variable "resource_prefix" {
   type        = string
 }
 
+variable "namespace" {
+  description = "Namespace for the IAM S3 Bucket Role"
+  type        = string
+}
+
 variable "bucket_names" {
   description = "List of buckets"
   type        = list(string)

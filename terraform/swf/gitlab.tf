@@ -1,8 +1,12 @@
 # S3 Buckets
 
 ## This will create a bucket for each name in `bucket_names`.
-module "s3_bucket" {
-  for_each = toset(var.bucket_names)
+moved {
+  from = module.s3_bucket
+  to   = module.gitlab_s3_bucket
+}
+module "gitlab_s3_bucket" {
+  for_each = toset(var.gitlab_bucket_names)
 
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.1"
@@ -14,25 +18,34 @@ module "s3_bucket" {
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
-        kms_master_key_id = module.kms_key.kms_key_arn
+        kms_master_key_id = module.gitlab_kms_key.kms_key_arn
         sse_algorithm     = "aws:kms"
       }
     }
   }
 }
 
-module "irsa-s3" {
+moved {
+  from = module.irsa-s3
+  to   = module.gitlab_irsa-s3
+}
+module "gitlab_irsa-s3" {
   source = "../../modules/irsa-s3"
 
   environment          = var.environment
   region               = var.region
   permissions_boundary = var.permissions_boundary
   resource_prefix      = local.resource_prefix
-  bucket_names         = var.bucket_names
-  kms_key_arn          = module.kms_key.kms_key_arn
+  namespace            = var.gitlab_namespace
+  bucket_names         = var.gitlab_bucket_names
+  kms_key_arn          = module.gitlab_kms_key.kms_key_arn
 }
 
-module "kms_key" {
+moved {
+  from = module.kms_key
+  to   = module.gitlab_kms_key
+}
+module "gitlab_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
 
   kms_key_alias_name_prefix = var.gitlab_kms_key_alias

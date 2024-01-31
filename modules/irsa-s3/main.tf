@@ -10,7 +10,7 @@ data "aws_caller_identity" "current" {}
 resource "aws_iam_policy" "s3_bucket_policy" {
   name        = "${var.resource_prefix}policy"
   path        = "/"
-  description = "IRSA policy to access GitLab buckets."
+  description = "IRSA policy to access buckets."
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -71,7 +71,7 @@ resource "aws_iam_role" "s3_bucket_role" {
         "Condition" : {
           "StringEquals" : {
             "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:aud" : "irsa",
-            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:sub" : "system:serviceaccount:gitlab:${each.value}"
+            "${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}:sub" : "system:serviceaccount:${var.namespace}:${each.value}"
           }
         }
       }

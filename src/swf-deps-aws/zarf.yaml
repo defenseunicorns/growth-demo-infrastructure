@@ -28,7 +28,7 @@ components:
       - name: gitlab-redis
         namespace: gitlab
         files:
-          - manifests/elasticache/secret.yaml
+          - manifests/elasticache/gitlab-secret.yaml
 
   - name: gitlab-s3
     required: true
@@ -36,7 +36,7 @@ components:
       - name: gitlab-s3
         namespace: gitlab
         files:
-          - manifests/s3/secret.yaml
+          - manifests/s3/gitlab-secret.yaml
 
   - name: sonarqube-rds
     required: true
