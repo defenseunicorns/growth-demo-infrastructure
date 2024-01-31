@@ -8,7 +8,7 @@ data "aws_caller_identity" "current" {}
 
 ## This will create a policy for the S3 Buckets
 resource "aws_iam_policy" "s3_bucket_policy" {
-  name        = "${var.resource_prefix}policy"
+  name        = "${var.resource_prefix}${var.namespace}-policy"
   path        = "/"
   description = "IRSA policy to access buckets."
   policy = jsonencode({
