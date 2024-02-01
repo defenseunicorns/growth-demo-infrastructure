@@ -35,7 +35,7 @@ packages:
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
-    ref: 9.4.1-uds.1-registry1
+    ref: 9.4.1-uds.2-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
@@ -50,13 +50,11 @@ packages:
               path: "objectStorage.region"
             - name: MATTERMOST_S3_ENDPOINT
               path: "objectStorage.endpoint"
+          # Enable plugin uploads for MM AI plugin
+          values:
+            - path: "config.enablePluginUploads"
+              value: "true"
         mattermost-enterprise-edition:
           variables:
             - name: MATTERMOST_ROLE_ARN
               path: "serviceAccount.annotations.irsa/role-arn"
-          # Enable plugin uploads for MM AI plugin
-          values:
-            - path: "mattermostApp.extraEnv"
-              value:
-                - name: MM_PLUGINSETTINGS_ENABLEUPLOADS
-                  value: "true"
