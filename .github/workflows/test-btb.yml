@@ -168,6 +168,10 @@ jobs:
         shell: bash
         run: uds run create-swf
 
+      - name: Test creation of the lfai bundle
+        shell: bash
+        run: uds run create-lfai
+
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs

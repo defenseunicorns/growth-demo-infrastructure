@@ -217,6 +217,14 @@ jobs:
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
           ENVIRONMENT: btb
 
+      - name: Create the lfai bundle
+        shell: bash
+        run: uds run create-lfai
+  
+      - name: Deploy the lfai bundle
+        shell: bash
+        run: uds run deploy-lfai
+  
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs

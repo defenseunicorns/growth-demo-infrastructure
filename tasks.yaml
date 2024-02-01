@@ -32,3 +32,15 @@ tasks:
   - name: destroy-swf
     actions:
       - task: destroy:swf
+
+  - name: create-lfai
+    actions:
+      - task: create:lfai
+
+  - name: deploy-lfai
+    actions:
+      - task: deploy:lfai
+
+  - name: destroy-lfai
+    actions:
+      - task: destroy:lfai

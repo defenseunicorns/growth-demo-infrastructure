@@ -16,3 +16,8 @@ tasks:
 
       - description: Deploy the SWF bundle
         cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress
+
+  - name: lfai
+    actions:
+      - description: Deploy the LFAI bundle
+        cmd: UDS_CONFIG=bundles/lfai/uds-config.yaml uds deploy bundles/lfai/uds-bundle-lfai-*.tar.zst --confirm --no-progress

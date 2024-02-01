@@ -1,0 +1,14 @@
+kind: UDSBundle
+metadata:
+  name: lfai
+  description: A UDS bundle for deploying LFAI
+  version: 0.1.0
+
+packages:
+  - name: gpu-operator
+    path: ../../
+    ref: "0.1.0"
+  
+#  - name: lfai
+#    repository: ghcr.io/defenseunicorns/packages/<SOMETHINGHERE>
+#    ref: <VERSIONHERE>

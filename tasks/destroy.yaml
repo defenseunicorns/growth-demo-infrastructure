@@ -10,3 +10,9 @@ tasks:
     actions:
       - description: "Remove the SWF UDS BTB Bundle"
         cmd: uds remove bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress
+
+  - name: lfai
+    description: "Remove the LFAI UDS BTB Bundle"
+    actions:
+      - description: "Remove the LFAI UDS BTB Bundle"
+        cmd: uds remove bundles/lfai/uds-bundle-lfai-*.tar.zst --confirm --no-progress

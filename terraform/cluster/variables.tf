@@ -95,6 +95,50 @@ variable "agent_extra_block_device_mappings" {
   default = []
 }
 
+#
+# LFAI Configs for RKE2
+#
+variable "enable_lfai_agents" {
+  description = "Whether to create RKE2 agents to support LFAI."
+  type        = bool
+  default     = false
+}
+
+variable "lfai_agent_instance_type" {
+  description = "Instance type for LFAI agents"
+  type        = string
+  default     = "p3.8xlarge"
+}
+
+variable "lfai_agent_asg_min" {
+  description = "ASG minimum config for LFAI agent nodepool"
+  type        = number
+  default     = 1
+}
+
+variable "lfai_agent_asg_desired" {
+  description = "ASG desired config for LFAI agent nodepool"
+  type        = number
+  default     = 1
+}
+
+variable "lfai_agent_asg_max" {
+  description = "ASG max config for LFAI agent nodepool"
+  type        = number
+  default     = 1
+}
+
+variable "lfai_agent_block_device_size" {
+  description = "Size (GB) for the primary block device on LFAI agent nodes"
+  type        = number
+  default     = 100
+}
+
+variable "lfai_agent_extra_block_device_mappings" {
+  type    = list(map(string))
+  default = []
+}
+
 # UDS Config Variables
 
 variable "recovery_window" {

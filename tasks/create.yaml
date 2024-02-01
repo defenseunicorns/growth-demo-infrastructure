@@ -15,3 +15,12 @@ tasks:
       
       - description: Create the SWF bundle
         cmd: uds create bundles/swf/ --confirm --no-progress --architecture=${ZARF_ARCHITECTURE}
+
+  - name: lfai
+    description: Create the LFAI bundle
+    actions:
+      - description: Create the GPU-Operator Package
+        cmd: zarf package create src/gpu-operator/ --confirm --no-progress --architecture=${ZARF_ARCHITECTURE}
+      
+      - description: Create the LFAI bundle
+        cmd: uds create bundles/lfai/ --confirm --no-progress --architecture=${ZARF_ARCHITECTURE}

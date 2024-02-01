@@ -237,6 +237,48 @@ module "rke2_agents" {
   ssh_authorized_keys = var.enable_ssh ? [tls_private_key.ssh[0].public_key_openssh] : []
 }
 
+module "lfai_rke2_agents" {
+  count = var.enable_lfai_agents ? 1 : 0
+
+  source = "github.com/rancherfederal/rke2-aws-tf//modules/agent-nodepool?ref=v2.4.0"
+
+  name          = "lfai_agent"
+  vpc_id        = data.aws_vpc.vpc.id
+  subnets       = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
+  ami           = var.rke2_ami
+  instance_type = var.lfai_agent_instance_type
+
+  #
+  # Nodepool Config
+  #
+  iam_permissions_boundary = var.permissions_boundary
+  block_device_mappings = {
+    size      = var.lfai_agent_block_device_size
+    encrypted = true
+    type      = "gp3"
+  }
+  asg = {
+    min : var.lfai_agent_asg_min,
+    max : var.lfai_agent_asg_max,
+    desired : var.lfai_agent_asg_desired,
+    termination_policies : ["Default"]
+  }
+  extra_block_device_mappings = var.lfai_agent_extra_block_device_mappings
+
+  #
+  # RKE2 Config
+  #
+  cluster_data              = module.rke2.cluster_data
+  enable_ccm                = true
+  ccm_external              = true
+  download                  = false
+  pre_userdata              = local.pre_userdata
+  post_userdata             = local.post_userdata
+  wait_for_capacity_timeout = "30m"
+
+  ssh_authorized_keys = var.enable_ssh ? [tls_private_key.ssh[0].public_key_openssh] : []
+}
+
 #
 # SSH Config for Testing
 #

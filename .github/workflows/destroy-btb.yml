@@ -41,6 +41,14 @@ jobs:
       - name: GHCR Login
         run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
+      - name: Create the lfai bundle
+        shell: bash
+        run: uds run create-lfai
+      
+      - name: Destroy the lfai bundle
+        shell: bash
+        run: uds run destroy-lfai
+
       - name: Create the swf bundle
         shell: bash
         run: uds run create-swf
