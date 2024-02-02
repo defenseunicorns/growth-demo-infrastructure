@@ -17,7 +17,13 @@ on:
       swf:
         required: true
         type: boolean
-      bundles:
+      base_bundle:
+        required: true
+        type: boolean
+      swf_bundle:
+        required: true
+        type: boolean
+      lfai_bundle:
         required: true
         type: boolean
 
@@ -35,7 +41,9 @@ jobs:
       irsa_changes: ${{ steps.changes.outputs.irsa }}
       cluster_changes: ${{ steps.changes.outputs.cluster }}
       swf_changes: ${{ steps.changes.outputs.swf }}
-      bundle_changes: ${{ steps.changes.outputs.bundle }}
+      base_bundle_changes: ${{ steps.changes.outputs.base_bundle }}
+      swf_bundle_changes: ${{ steps.changes.outputs.swf_bundle }}
+      lfai_bundle_changes: ${{ steps.changes.outputs.lfai_bundle }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -67,11 +75,23 @@ jobs:
               - 'env/btb/swf.tfvars'
               - '.github/actions/terraform-deploy/**'
               - '.github/workflows/**'
-            bundle:
-              - 'bundles/**'
+            base_bundle:
+              - 'bundles/base/**'
               - 'tasks/**'
               - '.github/workflows/**'
-              - 'terraform/**/uds-config.tf'
+              - 'terraform/cluster/uds-config.tf'
+              - 'src/aws-lb-controller/**'
+            swf_bundle:
+              - 'bundles/swf/**'
+              - 'tasks/**'
+              - '.github/workflows/**'
+              - 'terraform/swf/uds-config.tf'
+              - 'src/swf-deps-aws/**'
+            lfai_bundle:
+              - 'bundles/lfai/**'
+              - 'tasks/**'
+              - '.github/workflows/**'
+              - 'src/gpu-operator/**'
 
   deploy_vpc:
     needs: check_changes
@@ -165,7 +185,7 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  deploy_bundles:
+  deploy_base_bundle:
     needs:
       - check_changes
       - deploy_cluster
@@ -175,7 +195,7 @@ jobs:
       ( needs.check_changes.result == 'success' || needs.check_changes.result == 'skipped' ) &&
       ( needs.deploy_cluster.result == 'success' || needs.deploy_cluster.result == 'skipped' ) &&
       ( needs.deploy_swf.result == 'success' || needs.deploy_swf.result == 'skipped' ) &&
-      ( needs.check_changes.outputs.bundle_changes == 'true' || inputs.bundles )
+      ( needs.check_changes.outputs.base_bundle_changes == 'true' || inputs.base_bundle )
     environment: btb
     runs-on: [self-hosted, staging]
     steps:
@@ -206,6 +226,34 @@ jobs:
           UDS_REGION: ${{ vars.AWS_REGION }}
           ENVIRONMENT: btb
 
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs
+        with:
+          suffix: -deploy-base-bundle
+
+  deploy_swf_bundle:
+    needs:
+      - check_changes
+      - deploy_base_bundle
+    if: |
+      ( !cancelled() ) &&
+      ( needs.deploy_base_bundle.result == 'success' || needs.deploy_base_bundle.result == 'skipped') &&
+      ( needs.check_changes.outputs.swf_bundle_changes == 'true' || inputs.swf_bundle)
+    environment: btb
+    runs-on: [self-hosted, staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
+
       - name: Create the SWF bundle
         shell: bash
         run: uds run create-swf
@@ -217,14 +265,44 @@ jobs:
           UDS_DOMAIN: ${{ vars.UDS_DOMAIN }}
           ENVIRONMENT: btb
 
-      - name: Create the lfai bundle
-        shell: bash
-        run: uds run create-lfai
-  
-      - name: Deploy the lfai bundle
-        shell: bash
-        run: uds run deploy-lfai
-  
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs
+        with:
+          suffix: -deploy-swf-bundle
+
+  deploy_lfai_bundle:
+    needs:
+      - check_changes
+      - deploy_swf_bundle
+    if: |
+      ( !cancelled() ) &&
+      ( needs.deploy_swf_bundle.result == 'success' || needs.deploy_swf_bundle.result == 'skipped') &&
+      ( needs.check_changes.outputs.lfai_bundle_changes == 'true' || inputs.lfai_bundle)
+    environment: btb
+    runs-on: [self-hosted, staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
+
+      - name: Create the lfai bundle
+        shell: bash
+        run: uds run create-lfai
+
+      - name: Deploy the lfai bundle
+        shell: bash
+        run: uds run deploy-lfai
+
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs
+        with:
+          suffix: -deploy-lfai-bundle

@@ -22,7 +22,9 @@ jobs:
       irsa_changes: ${{ steps.changes.outputs.irsa }}
       cluster_changes: ${{ steps.changes.outputs.cluster }}
       swf_changes: ${{ steps.changes.outputs.swf }}
-      bundle_changes: ${{ steps.changes.outputs.bundle }}
+      base_bundle_changes: ${{ steps.changes.outputs.base_bundle }}
+      swf_bundle_changes: ${{ steps.changes.outputs.swf_bundle }}
+      lfai_bundle_changes: ${{ steps.changes.outputs.lfai_bundle }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -54,11 +56,23 @@ jobs:
               - 'env/btb/swf.tfvars'
               - '.github/actions/terraform-test/**'
               - '.github/workflows/**'
-            bundle:
-              - 'bundles/**'
+            base_bundle:
+              - 'bundles/base/**'
               - 'tasks/**'
               - '.github/workflows/**'
-              - 'terraform/**/uds-config.tf'
+              - 'terraform/cluster/uds-config.tf'
+              - 'src/aws-lb-controller/**'
+            swf_bundle:
+              - 'bundles/swf/**'
+              - 'tasks/**'
+              - '.github/workflows/**'
+              - 'terraform/swf/uds-config.tf'
+              - 'src/swf-deps-aws/**'
+            lfai_bundle:
+              - 'bundles/lfai/**'
+              - 'tasks/**'
+              - '.github/workflows/**'
+              - 'src/gpu-operator/**'
 
   vpc_checks:
     needs: check_changes
@@ -136,7 +150,7 @@ jobs:
           STATE_BUCKET: ${{ vars.STATE_BUCKET }}
           LOCK_TABLE: ${{ vars.LOCK_TABLE }}
 
-  bundle_checks:
+  base_bundle_checks:
     needs:
       - check_changes
       - cluster_checks
@@ -145,7 +159,7 @@ jobs:
       ( !cancelled() ) &&
       ( needs.cluster_checks.result == 'success' || needs.cluster_checks.result == 'skipped' ) &&
       ( needs.swf_checks.result == 'success' || needs.swf_checks.result == 'skipped' ) &&
-      needs.check_changes.outputs.bundle_changes == 'true'
+      needs.check_changes.outputs.base_bundle_changes == 'true'
     environment: btb
     runs-on: [self-hosted, staging]
     steps:
@@ -164,9 +178,65 @@ jobs:
         shell: bash
         run: uds run create-base
 
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs
+        with:
+          suffix: -base-bundle-checks
+
+  swf_bundle_checks:
+    needs:
+      - check_changes
+      - base_bundle_checks
+    if: |
+      ( !cancelled() ) &&
+      ( needs.base_bundle_checks.result == 'success' || needs.base_bundle_checks.result == 'skipped' ) &&
+      needs.check_changes.outputs.swf_bundle_changes == 'true'
+    environment: btb
+    runs-on: [self-hosted, staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
+
       - name: Test creation of the swf bundle
         shell: bash
         run: uds run create-swf
+
+      - name: Save logs
+        if: always()
+        uses: ./.github/actions/save-logs
+        with:
+          suffix: -swf-bundle-checks
+
+  lfai_bundle_checks:
+    needs:
+      - check_changes
+      - swf_bundle_checks
+    if: |
+      ( !cancelled() ) &&
+      ( needs.swf_bundle_checks.result == 'success' || needs.swf_bundle_checks.result == 'skipped' ) &&
+      needs.check_changes.outputs.lfai_bundle_changes == 'true'
+    environment: btb
+    runs-on: [self-hosted, staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup runner
+        shell: bash
+        run: uds run setup
+        env:
+          ENVIRONMENT: btb
+
+      - name: GHCR Login
+        run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
 
       - name: Test creation of the lfai bundle
         shell: bash
@@ -175,3 +245,5 @@ jobs:
       - name: Save logs
         if: always()
         uses: ./.github/actions/save-logs
+        with:
+          suffix: -lfai-bundle-checks
