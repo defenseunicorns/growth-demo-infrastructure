@@ -11,3 +11,10 @@ toolkit:
       value: nvidia
     - name: CONTAINERD_SET_AS_DEFAULT
       value: "true"
+node-feature-discovery:
+  worker:
+    securityContext:
+      privileged: true
+  master:
+    securityContext:
+      privileged: true
