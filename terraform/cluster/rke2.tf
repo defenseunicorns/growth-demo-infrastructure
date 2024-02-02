@@ -62,7 +62,7 @@ spec:
 EOM
 
 echo "Installing awscli"
-yum install -y unzip jq
+yum install -y unzip jq || apt-get -y install unzip jq
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
@@ -245,7 +245,7 @@ module "lfai_rke2_agents" {
   name          = "lfai_agent"
   vpc_id        = data.aws_vpc.vpc.id
   subnets       = var.public_access ? data.aws_subnets.public_subnets.ids : data.aws_subnets.private_subnets.ids
-  ami           = var.rke2_ami
+  ami           = var.lfai_rke2_ami
   instance_type = var.lfai_agent_instance_type
 
   #

@@ -104,6 +104,12 @@ variable "enable_lfai_agents" {
   default     = false
 }
 
+variable "lfai_rke2_ami" {
+  description = "ID of the RKE2 AMI to use for the LFAI nodes"
+  type        = string
+  default     = null
+}
+
 variable "lfai_agent_instance_type" {
   description = "Instance type for LFAI agents"
   type        = string
