@@ -229,7 +229,7 @@ jobs:
         shell: bash
         run: uds run setup
         env:
-          ENVIRONMENT: btb
+          ENVIRONMENT: btb-prod
 
       - name: GHCR Login
         run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
