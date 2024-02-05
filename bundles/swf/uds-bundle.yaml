@@ -11,7 +11,7 @@ packages:
   
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 16.5.1-3-amd64
+    ref: 16.8.1-uds.2-registry1
     overrides:
       gitlab:
         gitlab:
@@ -29,9 +29,13 @@ packages:
               description: "The ARN of the role to assume for the toolbox pods"
               path: gitlab.toolbox.serviceAccount.annotations.irsa/role-arn
 
+  - name: gitlab-runner
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
+    ref: 16.8.0-uds.0-registry1
+
   - name: sonarqube
     repository: ghcr.io/defenseunicorns/packages/uds/sonarqube
-    ref: 8.0.3-uds.4-upstream-ce
+    ref: 8.0.3-uds.4-registry1
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
