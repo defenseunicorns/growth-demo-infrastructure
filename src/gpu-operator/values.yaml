@@ -20,3 +20,8 @@ node-feature-discovery:
     securityContext:
       privileged: true
       allowPrivilegeEscalation: true
+validator:
+  driver:
+    env:
+      - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
+        value: "true"
