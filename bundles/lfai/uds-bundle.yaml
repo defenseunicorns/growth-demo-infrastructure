@@ -9,6 +9,14 @@ packages:
     path: ../../
     ref: "0.1.0"
 
-#  - name: lfai
-#    repository: ghcr.io/defenseunicorns/packages/<SOMETHINGHERE>
-#    ref: <VERSIONHERE>
+  - name: leapfrogai-api
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai-api
+    ref: dev
+
+  - name: leapfrog-ui
+    repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
+    ref: dev
+
+  - name: llama-cpp
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/llama-cpp
+    ref: dev
