@@ -15,7 +15,7 @@ packages:
 
   - name: leapfrog-ui
     repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
-    ref: dev
+    ref: dev2
 
   - name: llama-cpp
     repository: ghcr.io/defenseunicorns/packages/leapfrogai/llama-cpp
