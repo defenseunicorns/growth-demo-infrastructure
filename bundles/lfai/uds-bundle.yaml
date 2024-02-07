@@ -17,6 +17,12 @@ packages:
     repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
     ref: dev2
 
+  # Model for generic chat
   - name: llama-cpp
     repository: ghcr.io/defenseunicorns/packages/leapfrogai/llama-cpp
     ref: dev
+
+  # Model for converting audio to text
+  - name: whisper
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/whisper
+    ref: dev-amd64
