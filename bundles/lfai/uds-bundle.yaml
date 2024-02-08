@@ -15,7 +15,7 @@ packages:
 
   - name: leapfrog-ui
     repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
-    ref: dev2
+    ref: dev3
 
   # Model for generic chat
   - name: llama-cpp

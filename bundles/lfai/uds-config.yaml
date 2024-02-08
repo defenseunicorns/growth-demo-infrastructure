@@ -1,4 +1,4 @@
 variables:
   leapfrog-ui:
-    domain: https://leapfrogai.burning.boats
+    domain: https://ai.burning.boats
     model: llama-cpp
