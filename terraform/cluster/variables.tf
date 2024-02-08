@@ -25,6 +25,17 @@ variable "permissions_boundary" {
   default     = null
 }
 
+variable "pre_userdata_base_file" {
+  description = "The path to the file containing the base pre_userdata"
+  type        = string
+  default     = "./scripts/pre_userdata_base.sh"
+}
+
+variable "post_userdata_base_file" {
+  description = "The path to the file containing the base post_userdata"
+  type        = string
+  default     = "./scripts/post_userdata_base.sh"
+}
 
 variable "public_access" {
   description = "Setting this to true will put the nodes in public subnets and make the controlplane external."
@@ -143,6 +154,12 @@ variable "lfai_agent_block_device_size" {
 variable "lfai_agent_extra_block_device_mappings" {
   type    = list(map(string))
   default = []
+}
+
+variable "lfai_pre_userdata_additional_file" {
+  description = "The path to the file containing the additional lfai pre_userdata"
+  type        = string
+  default     = "./scripts/pre_userdata_additional_lfai.sh"
 }
 
 # UDS Config Variables
