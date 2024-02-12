@@ -10,4 +10,4 @@ sudo dnf clean expire-cache
 sudo dnf module install nvidia-driver:latest-dkms -y
 sudo dnf install cuda-toolkit -y
 sudo dnf install nvidia-gds -y
-sudo cd /sbin && sudo ln -s ldconfig ldconfig.real
+sudo ln -s /sbin/ldconfig /sbin/ldconfig.real
