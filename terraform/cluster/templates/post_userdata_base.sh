@@ -33,4 +33,3 @@ chmod 0700 $dir/tls
 chmod 0751 $dir/manifests
 chmod 0750 $dir/logs
 chmod 0600 $dir/token
-EOF

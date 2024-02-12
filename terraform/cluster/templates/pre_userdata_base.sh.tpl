@@ -56,8 +56,8 @@ sudo ./aws/install
 echo "Getting OIDC keypair"
 sudo mkdir /irsa
 sudo chown ec2-user:ec2-user /irsa
-aws secretsmanager get-secret-value --secret-id ${var.environment}-oidc-private-key | jq -r '.SecretString' > /irsa/signer.key
-aws secretsmanager get-secret-value --secret-id ${var.environment}-oidc-public-key | jq -r '.SecretString' > /irsa/signer.key.pub
+aws secretsmanager get-secret-value --secret-id ${environment}-oidc-private-key | jq -r '.SecretString' > /irsa/signer.key
+aws secretsmanager get-secret-value --secret-id ${environment}-oidc-public-key | jq -r '.SecretString' > /irsa/signer.key.pub
 chcon -t svirt_sandbox_file_t /irsa/*
 
 # This is done via yq because the RKE2 module input doesn't merge with existing config
@@ -67,6 +67,5 @@ chmod +x yq
 ./yq -i '.kube-apiserver-arg += "service-account-key-file=/irsa/signer.key.pub"' /etc/rancher/rke2/config.yaml
 ./yq -i '.kube-apiserver-arg += "service-account-signing-key-file=/irsa/signer.key"' /etc/rancher/rke2/config.yaml
 ./yq -i '.kube-apiserver-arg += "api-audiences=kubernetes.svc.default"' /etc/rancher/rke2/config.yaml
-./yq -i '.kube-apiserver-arg += "service-account-issuer=https://${data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name}"' /etc/rancher/rke2/config.yaml
+./yq -i '.kube-apiserver-arg += "service-account-issuer=https://${bucket_regional_domain_name}"' /etc/rancher/rke2/config.yaml
 rm -rf ./yq
-EOF

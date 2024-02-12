@@ -28,13 +28,13 @@ variable "permissions_boundary" {
 variable "pre_userdata_base_file" {
   description = "The path to the file containing the base pre_userdata"
   type        = string
-  default     = "./scripts/pre_userdata_base.sh"
+  default     = "./templates/pre_userdata_base.sh.tpl"
 }
 
 variable "post_userdata_base_file" {
   description = "The path to the file containing the base post_userdata"
   type        = string
-  default     = "./scripts/post_userdata_base.sh"
+  default     = "./templates/post_userdata_base.sh"
 }
 
 variable "public_access" {
@@ -159,7 +159,7 @@ variable "lfai_agent_extra_block_device_mappings" {
 variable "lfai_pre_userdata_additional_file" {
   description = "The path to the file containing the additional lfai pre_userdata"
   type        = string
-  default     = "./scripts/pre_userdata_additional_lfai.sh"
+  default     = "./templates/pre_userdata_additional_lfai.sh"
 }
 
 # UDS Config Variables

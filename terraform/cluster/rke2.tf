@@ -11,7 +11,10 @@ locals {
   # and ../vpc/vpc.tf
   cluster_name = "uds-${var.environment}"
 
-  pre_userdata = file(var.pre_userdata_base_file)
+  pre_userdata = templatefile(var.pre_userdata_base_file, {
+    environment                 = var.environment
+    bucket_regional_domain_name = data.aws_s3_bucket.oidc_bucket.bucket_regional_domain_name
+  })
 
   pre_userdata_lfai_additional = file(var.lfai_pre_userdata_additional_file)
 
@@ -207,7 +210,7 @@ resource "aws_security_group_rule" "quickstart_ssh" {
 #
 resource "aws_iam_policy" "aws_lb_controller_policy" {
   name = "${var.environment}-aws-lb-controller-policy"
-  policy = templatefile("templates/aws_lb_controller_policy.json", {
+  policy = templatefile("templates/aws_lb_controller_policy.json.tpl", {
     vpc_arn       = data.aws_vpc.vpc.arn
     arn_partition = data.aws_partition.current.partition
   })
