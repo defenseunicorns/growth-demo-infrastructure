@@ -9,5 +9,6 @@ sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute
 sudo dnf clean expire-cache
 sudo dnf module install nvidia-driver:latest-dkms -y
 sudo dnf install cuda-toolkit -y
+sudo dnf install nvidia-container-toolkit -y
 sudo dnf install nvidia-gds -y
 sudo ln -s /sbin/ldconfig /sbin/ldconfig.real
