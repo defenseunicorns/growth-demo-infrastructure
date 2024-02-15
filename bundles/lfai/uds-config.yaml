@@ -1,4 +1,14 @@
 variables:
   leapfrog-ui:
-    domain: https://ai.burning.boats
-    model: llama-cpp
+    domain: https://ai.uds.dev
+    model: llama-cpp-python-gpu
+  llama-cpp-python:
+    # DO NOT turn off GPU nor reduce the # of GPUs available to this pod, else it will fail
+    gpu_enabled: "true"
+    requests_gpu: 1
+    limits_gpu: 1
+  whisper:
+    # disabling and reduction of GPU resources is allowed 
+    gpu_enabled: "true"
+    requests_gpu: 1
+    limits_gpu: 1
