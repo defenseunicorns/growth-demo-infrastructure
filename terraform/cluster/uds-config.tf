@@ -22,7 +22,7 @@ variables:
   init:
     # Workaround for SELinux EBS issue - https://github.com/bottlerocket-os/bottlerocket/issues/2417
     registry_hpa_enable: false
-    registry_pvc_size: 50Gi
+    registry_pvc_size: 100Gi
   aws-lb-controller:
     cluster_name: "uds-${var.environment}"
     lb_role_arn: "${aws_iam_role.aws_lb_controller_role.arn}"
