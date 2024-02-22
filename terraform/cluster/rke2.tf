@@ -19,6 +19,8 @@ locals {
   pre_userdata_lfai_additional = file(var.lfai_pre_userdata_additional_file)
 
   post_userdata = file(var.post_userdata_base_file)
+
+  resource_prefix = "uds-core-${var.environment}-"
 }
 
 data "aws_vpc" "vpc" {

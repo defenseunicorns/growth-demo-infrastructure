@@ -11,3 +11,5 @@ server_block_device_size = 150
 agent_block_device_size  = 150
 enable_lfai_agents       = true
 lfai_rke2_ami            = "ami-00249779f19dcc1a5"
+loki_namespace           = "loki"
+force_destroy            = true

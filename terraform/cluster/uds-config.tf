@@ -30,6 +30,11 @@ variables:
     # These are escaped with commas to workaround a uds/zarf parsing issue (4x \ for terraform to print out 2x \ into the file)
     tenant_eip_allocations: "${join("\\\\,", data.aws_eips.tenant.allocation_ids)}"
     passthrough_eip_allocations: "${join("\\\\,", data.aws_eips.passthrough.allocation_ids)}"
+    loki_bucket_chunks: "uds-loki-chunks-${var.environment}"
+    loki_bucket_ruler: "uds-loki-ruler-${var.environment}"
+    loki_bucket_admin: "uds-loki-admin-${var.environment}"
+    loki_region: "${var.region}"
+    loki_role_arn: "${module.loki_irsa-s3.bucket_roles["loki"].arn}"
 EOY
 }
 

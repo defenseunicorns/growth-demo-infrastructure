@@ -106,6 +106,29 @@ variable "agent_extra_block_device_mappings" {
   default = []
 }
 
+variable "loki_namespace" {
+  description = "Namespace Loki is deployed to"
+  type        = string
+}
+
+variable "loki_bucket_names" {
+  description = "List of buckets to create for Loki"
+  type        = list(string)
+  default     = ["loki-chunks", "loki-ruler", "loki-admin"]
+}
+
+variable "loki_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "uds-loki"
+}
+
+variable "force_destroy" {
+  description = "Option to set force destroy"
+  type        = bool
+  default     = false
+}
+
 #
 # LFAI Configs for RKE2
 #

@@ -9,3 +9,5 @@ agent_instance_type      = "m5.4xlarge"
 enable_ssh               = true
 server_block_device_size = 150
 agent_block_device_size  = 150
+loki_namespace           = "loki"
+force_destroy            = false
