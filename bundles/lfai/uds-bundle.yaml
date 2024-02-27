@@ -11,7 +11,7 @@ packages:
 
   - name: leapfrogai-api
     repository: ghcr.io/defenseunicorns/packages/leapfrogai-api
-    ref: "dev"
+    ref: "v0.5.1"
 
   - name: leapfrog-ui
     repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
