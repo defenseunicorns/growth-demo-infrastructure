@@ -207,6 +207,9 @@ jobs:
         env:
           ENVIRONMENT: btb
 
+      - name: Environment setup
+        uses: ./.github/actions/setup
+
       - name: GHCR Login
         run: zarf tools registry login -u "dummy" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
 

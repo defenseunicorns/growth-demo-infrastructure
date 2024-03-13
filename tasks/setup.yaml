@@ -1,5 +1,5 @@
 tasks:
-  - name: kubeconfig
+  - name: base-setup
     actions:
       - description: Setup the cluster connection (kubeconfig)
         cmd: |
@@ -9,10 +9,17 @@ tasks:
           aws s3 cp s3://uds-$ENVIRONMENT-rke2/rke2.yaml ~/.kube/config
           set +e
 
+      - description: Setup the UDS temp directory
+        cmd: |
+          test -d /var/tmp/uds || sudo mkdir /var/tmp/uds
+          sudo chmod 1777 /var/tmp/uds
+
       - description: Cleanup single self-hosted runner
         cmd: |
           sudo rm -rf /tmp/zarf-*.log
           sudo rm -rf /tmp/uds-*.log
+          sudo rm -rf /var/tmp/zarf-*.log
+          sudo rm -rf /var/tmp/uds-*.log
           sudo rm -rf uds-*.tar.zst # Remove outdated bundles
 
       - description: Wait for cluster connection

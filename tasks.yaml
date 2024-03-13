@@ -1,5 +1,5 @@
 includes:
-  - setup: ./tasks/setup.yaml
+  - system-setup: ./tasks/setup.yaml
   - create: ./tasks/create.yaml
   - deploy: ./tasks/deploy.yaml
   - destroy: ./tasks/destroy.yaml
@@ -7,7 +7,7 @@ includes:
 tasks:
   - name: setup
     actions:
-      - task: setup:kubeconfig
+      - task: system-setup:base-setup
 
   - name: create-base
     actions:

@@ -1,0 +1,20 @@
+# action.yml
+name: "Setup Environment"
+description: "UDS Environment Setup"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install UDS CLI
+      shell: bash
+      run: |
+        curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/uds-cli/releases/download/v0.9.3/uds-cli_v0.9.3_Linux_amd64 -o uds
+        chmod +x uds
+        sudo mv uds /usr/local/bin/
+
+    - name: Install Zarf CLI
+      shell: bash
+      run: |
+        curl --retry-all-errors --retry 5 -L https://github.com/defenseunicorns/zarf/releases/download/v0.32.5/zarf_v0.32.5_Linux_amd64 -o zarf
+        chmod +x zarf
+        sudo mv zarf /usr/local/bin

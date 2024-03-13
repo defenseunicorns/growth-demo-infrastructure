@@ -6,7 +6,7 @@ tasks:
         cmd: aws secretsmanager get-secret-value --secret-id uds-base-${ENVIRONMENT}-uds-config --query SecretString --output text > bundles/base/uds-config.yaml
 
       - description: Deploy the base UDS bundle
-        cmd: UDS_CONFIG=bundles/base/uds-config.yaml uds deploy bundles/base/uds-bundle-base-*.tar.zst --confirm --no-progress
+        cmd: UDS_CONFIG=bundles/base/uds-config.yaml uds deploy bundles/base/uds-bundle-base-*.tar.zst --confirm --no-progress --tmpdir=/var/tmp/uds
 
   - name: swf
     actions:
@@ -15,9 +15,9 @@ tasks:
         cmd: aws secretsmanager get-secret-value --secret-id uds-swf-${ENVIRONMENT}-uds-config --query SecretString --output text > bundles/swf/uds-config.yaml
 
       - description: Deploy the SWF bundle
-        cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress
+        cmd: UDS_CONFIG=bundles/swf/uds-config.yaml uds deploy bundles/swf/uds-bundle-swf-*.tar.zst --confirm --no-progress --tmpdir=/var/tmp/uds
 
   - name: lfai
     actions:
       - description: Deploy the LFAI bundle
-        cmd: UDS_CONFIG=bundles/lfai/uds-config.yaml uds deploy bundles/lfai/uds-bundle-lfai-*.tar.zst --confirm --no-progress
+        cmd: UDS_CONFIG=bundles/lfai/uds-config.yaml uds deploy bundles/lfai/uds-bundle-lfai-*.tar.zst --confirm --no-progress --tmpdir=/var/tmp/uds
