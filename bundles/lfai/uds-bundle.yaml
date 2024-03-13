@@ -2,27 +2,36 @@ kind: UDSBundle
 metadata:
   name: lfai-gpu
   description: A UDS bundle for deploying LFAI with GPU support
-  version: 0.1.0
+  version: 0.2.0
 
 packages:
   - name: gpu-operator
     path: ../../
-    ref: "0.1.0"
+    ref: 0.1.0
 
   - name: leapfrogai-api
-    repository: ghcr.io/defenseunicorns/packages/leapfrogai-api
-    ref: "v0.5.1"
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/leapfrogai-api
+    ref: 0.5.3
 
-  - name: leapfrog-ui
-    repository: ghcr.io/defenseunicorns/packages/leapfrog-ui
-    ref: "dev3"
+  - name: leapfrogai-ui
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/leapfrogai-ui
+    ref: 0.3.2
 
-  # Model for generic chat, Synthia-7b q4_K_M, GPU-enabled
-  - name: llama-cpp-python
-    repository: ghcr.io/defenseunicorns/packages/leapfrogai/llama-cpp-python-gpu
-    ref: "0.2.0"
+  # Model for generic chat, GPU Enabled
+  - name: vllm
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/vllm
+    ref: dev
+
+  # Model for providing vector embeddings for text
+  - name: text-embeddings
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/text-embeddings
+    ref: 0.1.0
+
+  - name: rag
+    repository: ghcr.io/defenseunicorns/packages/leapfrogai/rag
+    ref: 0.3.1
 
   # Model for converting audio to text, whisper-base fp16, GPU-enabled
   - name: whisper
     repository: ghcr.io/defenseunicorns/packages/leapfrogai/whisper
-    ref: "0.5.0"
+    ref: 0.5.2
