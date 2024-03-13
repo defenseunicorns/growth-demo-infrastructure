@@ -86,7 +86,7 @@ module "gitlab_db" {
   maintenance_window      = "Mon:00:00-Mon:03:00"
 
   engine               = "postgres"
-  engine_version       = "15.3"
+  engine_version       = "15.5"
   major_engine_version = "15"
   family               = "postgres15"
   instance_class       = "db.t4g.large"
