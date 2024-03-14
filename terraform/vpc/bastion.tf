@@ -22,7 +22,7 @@ resource "aws_instance" "bastion_host" {
 
   root_block_device {
     encrypted   = true
-    volume_size = 120
+    volume_size = 240
     volume_type = "gp3"
   }
 
